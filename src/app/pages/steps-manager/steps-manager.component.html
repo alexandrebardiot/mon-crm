@@ -1,0 +1,19 @@
+<div class="steps-manager">
+  <h2>Gestion des étapes</h2>
+
+  <form (submit)="addStep($event)">
+    <input type="text" [(ngModel)]="newStepLabel" name="stepLabel" placeholder="Nom de l'étape" required />
+    <button type="submit" [disabled]="isLoading">Ajouter</button>
+  </form>
+
+  <p *ngIf="error" class="error">{{ error }}</p>
+
+  <ul>
+    <li *ngFor="let step of steps">
+      {{ step.label }} (position: {{ step.position }})
+      <button (click)="deleteStep(step.id)" [disabled]="isLoading">Supprimer</button>
+    </li>
+  </ul>
+
+  <p *ngIf="isLoading">Chargement...</p>
+</div>

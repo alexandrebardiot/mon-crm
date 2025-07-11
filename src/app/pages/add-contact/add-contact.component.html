@@ -1,0 +1,49 @@
+<mat-toolbar color="primary">
+  <button mat-icon-button routerLink="/">
+    <mat-icon>arrow_back</mat-icon>
+  </button>
+  <span>Ajouter un contact</span>
+</mat-toolbar>
+
+<div class="container">
+  <form (ngSubmit)="ajouter()" #contactForm="ngForm">
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Nom de l'entreprise</mat-label>
+      <input matInput [(ngModel)]="company_name" name="company_name" />
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Nom du contact</mat-label>
+      <input matInput [(ngModel)]="contact_name" name="contact_name" required />
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Poste</mat-label>
+      <input matInput [(ngModel)]="position" name="position" />
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Email</mat-label>
+      <input matInput [(ngModel)]="email" name="email" required #emailCtrl="ngModel" email />
+      <div *ngIf="emailCtrl.invalid && emailCtrl.touched" class="error">
+        Email invalide
+      </div>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Téléphone</mat-label>
+      <input matInput [(ngModel)]="tel" name="tel" />
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Notes</mat-label>
+      <textarea matInput rows="3" [(ngModel)]="notes" name="notes"></textarea>
+    </mat-form-field>
+
+    <div *ngIf="errorMessage" class="error">{{ errorMessage }}</div>
+
+    <button mat-raised-button color="primary" type="submit" [disabled]="loading">
+      {{ loading ? 'Ajout en cours...' : 'Ajouter' }}
+    </button>
+  </form>
+</div>

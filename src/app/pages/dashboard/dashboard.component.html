@@ -1,0 +1,68 @@
+<mat-toolbar color="primary">
+  <span>Mes Contacts</span>
+  
+  <span class="spacer"></span>
+  <button mat-icon-button routerLink="/add-contact">
+    <mat-icon>add</mat-icon>
+  </button>
+  
+</mat-toolbar>
+
+<div class="container">
+  <div *ngIf="loading" class="loading">
+    <mat-progress-spinner diameter="50"></mat-progress-spinner>
+    <p>Chargement des contacts...</p>
+  </div>
+
+  <div *ngIf="errorMessage" class="error">
+    {{ errorMessage }}
+  </div>
+
+  <mat-list *ngIf="contacts.length && !loading; else emptyTpl">
+    <mat-list-item *ngFor="let contact of contacts" class="contact-item">
+      <div class="info-line">
+        <!-- Entreprise -->
+        <div class="company">
+          {{ contact.company_name || 'Entreprise non renseignée' }}
+        </div>
+
+        <!-- Personne avec tooltip -->
+        <div class="person"
+             [matTooltip]="getContactTooltip(contact)"
+             matTooltipPosition="above"
+             matTooltipShowDelay="200">
+          {{ contact.contact_name || 'Sans nom' }}
+        </div>
+
+        <!-- Notes avec tooltip + édition -->
+        <div class="notes"
+             [matTooltip]="contact.notes || 'Aucune note'"
+             matTooltipPosition="above"
+             matTooltipShowDelay="200"
+             (click)="editNote(contact)">
+          <strong [ngStyle]="{'font-weight': contact.notes ? 'bold' : 'normal'}">
+            Notes
+          </strong>
+        </div>
+
+        <!-- Voir détail -->
+        <button mat-icon-button color="primary" [routerLink]="['/contact', contact.id]">
+          <mat-icon>visibility</mat-icon>
+        </button>
+      </div>
+    </mat-list-item>
+  </mat-list>
+
+  <!-- Aucun contact -->
+  <ng-template #emptyTpl>
+    <div class="empty-state" *ngIf="!loading">
+      <mat-icon class="empty-icon">contacts</mat-icon>
+      <h3>Aucun contact</h3>
+      <p>Commencez par ajouter votre premier contact</p>
+      <button mat-raised-button color="primary" routerLink="/add-contact">
+        <mat-icon>add</mat-icon>
+        Ajouter un contact
+      </button>
+    </div>
+  </ng-template>
+</div>

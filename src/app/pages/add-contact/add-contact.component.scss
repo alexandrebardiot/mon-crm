@@ -1,0 +1,31 @@
+.container {
+  padding: 16px;
+  max-width: 500px;
+  margin: auto;
+}
+
+.full-width {
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+.error {
+  color: red;
+  margin: 8px 0;
+  font-size: 14px;
+}
+
+button[type="submit"] {
+  width: 100%;
+  margin-top: 16px;
+  padding: 12px;
+}
+
+mat-form-field {
+  display: block;
+}
+
+textarea {
+  resize: vertical;
+  min-height: 60px;
+}
