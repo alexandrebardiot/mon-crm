@@ -3,7 +3,7 @@ import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { AddContactComponent } from './pages/add-contact/add-contact.component';
 import { ContactDetailComponent } from './pages/contact-detail/contact-detail.component';
 import { LoginComponent } from './pages/login/login.component';
-import { StepsManagerComponent } from './pages/steps-manager/steps-manager.component';
+import { StepsManagerComponent } from './steps-manager/steps-manager.component';
 import { AuthGuard } from './guards/auth.guard'; 
 
 export const routes: Routes = [
