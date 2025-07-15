@@ -1,0 +1,254 @@
+<div class="steps-manager">
+  <!-- Sélection du template -->
+  <div class="template-selector">
+    <h2>Gestionnaire d'étapes</h2>
+    
+    <!-- Liste des templates avec gestion -->
+    <div class="templates-management">
+      <h3>Templates disponibles</h3>
+      
+      <!-- Bouton pour créer un nouveau template -->
+      <div class="template-creation">
+        <button 
+          type="button"
+          *ngIf="!isCreatingTemplate" 
+          class="btn-create-template" 
+          (click)="startCreatingTemplate()">
+          + Nouveau Template
+        </button>
+        
+        <!-- Formulaire de création -->
+        <div *ngIf="isCreatingTemplate" class="create-template-form">
+          <input 
+            type="text" 
+            [(ngModel)]="newTemplateName" 
+            placeholder="Nom du template"
+            class="template-name-input"
+            (keyup.enter)="createTemplate()"
+            (keyup.escape)="cancelCreatingTemplate()"
+            #createInput>
+          <button type="button" class="btn-validate" (click)="createTemplate()">✓</button>
+          <button type="button"class="btn-cancel" (click)="cancelCreatingTemplate()">✕</button>
+        </div>
+      </div>
+      
+      <!-- Liste des templates existants -->
+      <div class="templates-list" *ngIf="templates.length > 0">
+        <div 
+          *ngFor="let template of templates" 
+          class="template-item"
+          [class.selected]="selectedTemplate?.id === template.id">
+          
+          <!-- Mode édition du template -->
+          <div *ngIf="editingTemplateId === template.id" class="template-edit-form">
+            <input 
+              type="text" 
+              [(ngModel)]="editingTemplateName" 
+              class="template-edit-input"
+              (keyup.enter)="saveTemplateEdit()"
+              (keyup.escape)="cancelTemplateEditing()"
+              #editTemplateInput>
+            <button type="button"class="btn-validate" (click)="saveTemplateEdit()">✓</button>
+            <button type="button"class="btn-cancel" (click)="cancelTemplateEditing()">✕</button>
+          </div>
+          
+          <!-- Mode affichage du template -->
+          <div *ngIf="editingTemplateId !== template.id" class="template-display">
+            <span 
+              class="template-name" 
+              (click)="selectedTemplateId = template.id; selectTemplate(template.id)">
+              {{ template.name }}
+            </span>
+            <div class="template-actions">
+              <button 
+                type="button"
+                class="btn-edit" 
+                (click)="startEditingTemplate(template)"
+                title="Modifier le template">
+                ✏️
+              </button>
+              <button 
+                type="button"
+                class="btn-delete" 
+                (click)="deleteTemplate(template)"
+                title="Supprimer le template">
+                🗑️
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Sélection rapide par dropdown (optionnel) -->
+    <div class="template-dropdown">
+      <label for="template-select">Sélection rapide :</label>
+      <select 
+        id="template-select"
+        [(ngModel)]="selectedTemplateId" 
+        (change)="selectTemplate(selectedTemplateId)"
+        class="template-select">
+        <option value="">Sélectionnez un template</option>
+        <option *ngFor="let template of templates" [value]="template.id">
+          {{ template.name }}
+        </option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Affichage des erreurs -->
+  <div *ngIf="error" class="error-message">
+    {{ error }}
+  </div>
+
+  <!-- Indicateur de chargement -->
+  <div *ngIf="isLoading" class="loading">
+    Chargement...
+  </div>
+
+  <!-- Interface des étapes -->
+  <div *ngIf="selectedTemplate && !isLoading" class="steps-container">
+    <h3>Template : {{ selectedTemplate.name }}</h3>
+    
+    
+    <!-- 🔧 CORRECTION: Gestion du cas "aucune étape" avec formulaire d'insertion -->
+    <div *ngIf="steps.length === 0" class="no-steps">
+      <p>Aucune étape définie pour ce template.</p>
+      
+      <!-- Bouton pour ajouter la première étape -->
+      <div *ngIf="!isInsertingAtPosition(1)" class="first-step-button">
+        <button type="button" class="btn-add-first" (click)="startInsertingStep(1)">
+          Ajouter la première étape
+        </button>
+      </div>
+      
+      <!-- Formulaire d'insertion pour la première étape -->
+      <div *ngIf="isInsertingAtPosition(1)" class="insert-form first-step-form" style="background: #e8f5e8; padding: 15px; border-radius: 5px; margin-top: 10px;">
+        <h4>📝 Création de la première étape</h4>
+        <input 
+          type="text" 
+          [(ngModel)]="newStepName" 
+          placeholder="Nom de la première étape"
+          class="insert-input"
+          (keyup.enter)="insertStep()"
+          (keyup.escape)="cancelInserting()"
+          #insertInput>
+        <div class="form-actions">
+          <button type="button" class="btn-validate" (click)="insertStep()">✓ Créer l'étape</button>
+          <button type="button" class="btn-cancel" (click)="cancelInserting()">✕ Annuler</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Liste des étapes (quand il y en a) -->
+    <div *ngIf="steps.length > 0" class="steps-flow">
+      <!-- 🔧 CORRECTION: Zone d'insertion avant la première étape -->
+      <div class="insert-zone">
+        <button 
+          type="button"
+          *ngIf="!isInsertingAtPosition(1)" 
+          class="btn-insert" 
+          (click)="startInsertingStep(1)">
+          + Ajouter avant la première étape
+        </button>
+        
+        <div *ngIf="isInsertingAtPosition(1)" class="insert-form" style="background: #e8f5e8; padding: 10px; border-radius: 5px;">
+          <h4>📝 Insertion à la position 1</h4>
+          <input 
+            type="text" 
+            [(ngModel)]="newStepName" 
+            placeholder="Nom de l'étape"
+            class="insert-input"
+            (keyup.enter)="insertStep()"
+            (keyup.escape)="cancelInserting()"
+            #insertInput>
+          <div class="form-actions">
+            <button type="button" class="btn-validate" (click)="insertStep()">✓ Valider</button>
+            <button type="button" class="btn-cancel" (click)="cancelInserting()">✕ Annuler</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Étapes avec zones d'insertion -->
+      <ng-container *ngFor="let step of steps; let i = index">
+        <!-- Case de l'étape -->
+        <div 
+          class="step-card"
+          [class.dragging]="draggedStepId === step.id"
+          [class.drag-over]="draggedOverPosition === step.position"
+          [style.background-color]="getStepColor(step.position)"
+          draggable="true"
+          (dragstart)="onDragStart($event, step)"
+          (dragover)="onDragOver($event, step.position)"
+          (dragleave)="onDragLeave()"
+          (drop)="onDrop($event, step.position)"
+          (dragend)="onDragEnd()">
+          
+          <!-- Contenu de l'étape -->
+          <div class="step-content">
+            <!-- Mode édition -->
+            <div *ngIf="editingStepId === step.id" class="edit-form">
+              <input 
+                type="text" 
+                [(ngModel)]="editingStepName" 
+                class="edit-input"
+                (keyup.enter)="saveStepEdit()"
+                (keyup.escape)="cancelEditing()"
+                #editInput>
+              <div class="edit-actions">
+                <button type="button" class="btn-validate" (click)="saveStepEdit()">✓</button>
+                <button type="button" class="btn-cancel" (click)="cancelEditing()">✕</button>
+              </div>
+            </div>
+            
+            <!-- Mode affichage -->
+            <div *ngIf="editingStepId !== step.id" class="step-display">
+              <span class="step-name" (click)="startEditingStep(step)">
+                {{ step.name }}
+              </span>
+              <span class="step-position">{{ step.position }}</span>
+            </div>
+          </div>
+          
+          <!-- Bouton de suppression -->
+          <button 
+            type="button"
+            *ngIf="editingStepId !== step.id" 
+            class="btn-delete" 
+            (click)="deleteStep(step)"
+            title="Supprimer l'étape">
+            🗑️
+          </button>
+        </div>
+
+        <!-- 🔧 CORRECTION: Zone d'insertion après l'étape -->
+        <div class="insert-zone">
+          <button 
+            type="button"
+            *ngIf="!isInsertingAtPosition(step.position + 1)" 
+            class="btn-insert" 
+            (click)="startInsertingStep(step.position + 1)">
+            + Ajouter après "{{ step.name }}"
+          </button>
+          
+          <!-- Formulaire d'insertion pour les positions suivantes -->
+          <div *ngIf="isInsertingAtPosition(step.position + 1)" class="insert-form" style="background: #e8f5e8; padding: 10px; border-radius: 5px;">
+            <h4>📝 Insertion à la position {{ step.position + 1 }}</h4>
+            <input 
+              type="text" 
+              [(ngModel)]="newStepName" 
+              placeholder="Nom de l'étape"
+              class="insert-input"
+              (keyup.enter)="insertStep()"
+              (keyup.escape)="cancelInserting()"
+              #insertInput>
+            <div class="form-actions">
+              <button type="button" class="btn-validate" (click)="insertStep()">✓ Valider</button>
+              <button type="button" class="btn-cancel" (click)="cancelInserting()">✕ Annuler</button>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+</div>

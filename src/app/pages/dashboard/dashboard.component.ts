@@ -13,7 +13,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
-import { SupabaseService } from '../../services/supabase.service';
+import { ContactService } from '../../services';
 import { EditNoteDialogComponent } from '../edit-note-dialog/edit-note-dialog.component';
 
 @Component({
@@ -42,7 +42,7 @@ export class DashboardComponent implements OnInit {
   errorMessage = '';
 
   constructor(
-    private supabaseService: SupabaseService,
+    private contactService: ContactService,
     private dialog: MatDialog
   ) {}
 
@@ -51,7 +51,7 @@ export class DashboardComponent implements OnInit {
     this.errorMessage = '';
 
     try {
-      this.contacts = await this.supabaseService.getContacts();
+      this.contacts = await this.contactService.getContacts();
     } catch (error) {
       this.errorMessage = 'Erreur lors du chargement des contacts.';
       console.error(error);
@@ -68,7 +68,7 @@ export class DashboardComponent implements OnInit {
     const result = await dialogRef.afterClosed().toPromise();
     if (result !== undefined) {
       try {
-        await this.supabaseService.updateContact(contact.id, { notes: result });
+        await this.contactService.updateContact(contact.id, { notes: result });
         contact.notes = result;
       } catch (err) {
         console.error('Erreur mise à jour note', err);

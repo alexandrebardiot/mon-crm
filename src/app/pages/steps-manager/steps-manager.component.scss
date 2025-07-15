@@ -1,0 +1,582 @@
+.steps-manager {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+
+  h2 {
+    color: #333;
+    margin-bottom: 20px;
+  }
+
+  h3 {
+    color: #555;
+    margin-bottom: 15px;
+  }
+
+  h4 {
+    color: #666;
+    margin-bottom: 10px;
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  // ========== GESTION DES TEMPLATES ==========
+  
+  .template-selector {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+
+  .templates-management {
+    margin-bottom: 20px;
+  }
+
+  .template-creation {
+    margin-bottom: 15px;
+  }
+
+  .btn-create-template {
+    background: #28a745;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.2s;
+
+    &:hover {
+      background: #218838;
+    }
+  }
+
+  .create-template-form {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .template-name-input {
+    flex: 1;
+    padding: 8px 12px;
+    border: 2px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+
+    &:focus {
+      outline: none;
+      border-color: #007bff;
+    }
+  }
+
+  .templates-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .template-item {
+    background: white;
+    border: 2px solid #e9ecef;
+    border-radius: 6px;
+    padding: 12px;
+    transition: all 0.2s;
+
+    &.selected {
+      border-color: #007bff;
+      background: #f0f8ff;
+    }
+
+    &:hover {
+      border-color: #007bff;
+    }
+  }
+
+  .template-display {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .template-name {
+    cursor: pointer;
+    font-weight: 500;
+    color: #333;
+    flex: 1;
+
+    &:hover {
+      color: #007bff;
+    }
+  }
+
+  .template-actions {
+    display: flex;
+    gap: 5px;
+  }
+
+  .template-edit-form {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .template-edit-input {
+    flex: 1;
+    padding: 6px 10px;
+    border: 2px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+
+    &:focus {
+      outline: none;
+      border-color: #007bff;
+    }
+  }
+
+  .template-dropdown {
+    margin-top: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    label {
+      font-weight: 500;
+      color: #555;
+    }
+  }
+
+  .template-select {
+    flex: 1;
+    padding: 8px 12px;
+    border: 2px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    background: white;
+
+    &:focus {
+      outline: none;
+      border-color: #007bff;
+    }
+  }
+
+  // ========== MESSAGES ==========
+  
+  .error-message {
+    background: #f8d7da;
+    color: #721c24;
+    padding: 12px;
+    border-radius: 4px;
+    margin-bottom: 15px;
+    border: 1px solid #f5c6cb;
+  }
+
+  .loading {
+    text-align: center;
+    padding: 20px;
+    color: #666;
+    font-style: italic;
+  }
+
+  // ========== ÉTAPES ==========
+  
+  .steps-container {
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .no-steps {
+    text-align: center;
+    padding: 40px;
+    color: #666;
+
+    p {
+      margin-bottom: 20px;
+    }
+  }
+
+  .first-step-button {
+    margin-bottom: 20px;
+  }
+
+  .btn-add-first {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.2s;
+
+    &:hover {
+      background: #0056b3;
+    }
+  }
+
+  .steps-flow {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  // ========== ZONES D'INSERTION ==========
+  
+  .insert-zone {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 40px;
+    padding: 5px 0;
+  }
+
+  .btn-insert {
+    background: #6c757d;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    white-space: nowrap;
+
+    &:hover {
+      background: #5a6268;
+      transform: scale(1.05);
+    }
+  }
+
+  .insert-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background: #e8f5e8;
+    padding: 15px;
+    border-radius: 8px;
+    border: 2px dashed #28a745;
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
+
+    .form-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+    }
+  }
+
+  .first-step-form {
+    margin-top: 20px;
+    background: #e8f5e8 !important;
+    border: 2px dashed #28a745 !important;
+  }
+
+  .insert-input {
+    width: 100%;
+    padding: 10px 15px;
+    border: 2px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+    box-sizing: border-box;
+
+    &:focus {
+      outline: none;
+      border-color: #28a745;
+    }
+  }
+
+  // ========== CARTES D'ÉTAPES ==========
+  
+  .step-card {
+    background: white;
+    border-radius: 8px;
+    padding: 15px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    position: relative;
+    cursor: grab;
+    transition: all 0.2s;
+    border: 2px solid transparent;
+
+    &:hover {
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+      transform: translateY(-2px);
+    }
+
+    &.dragging {
+      opacity: 0.5;
+      cursor: grabbing;
+      transform: rotate(5deg);
+    }
+
+    &.drag-over {
+      border: 2px dashed #007bff;
+      background: #f0f8ff;
+    }
+  }
+
+  .step-content {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding-right: 40px; // Espace pour le bouton de suppression
+  }
+
+  .step-display {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex: 1;
+  }
+
+  .step-name {
+    cursor: pointer;
+    font-weight: 500;
+    color: #333;
+    flex: 1;
+
+    &:hover {
+      color: #007bff;
+    }
+  }
+
+  .step-position {
+    background: rgba(0, 123, 255, 0.1);
+    color: #007bff;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    min-width: 24px;
+    text-align: center;
+  }
+
+  .edit-form {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex: 1;
+  }
+
+  .edit-input {
+    flex: 1;
+    padding: 8px 12px;
+    border: 2px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+
+    &:focus {
+      outline: none;
+      border-color: #007bff;
+    }
+  }
+
+  .edit-actions {
+    display: flex;
+    gap: 5px;
+  }
+
+  .btn-delete {
+    background: #dc3545;
+    color: white;
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+
+    &:hover {
+      background: #c82333;
+      transform: scale(1.1);
+    }
+  }
+
+  .btn-edit {
+    background: #ffc107;
+    color: #212529;
+    border: none;
+    width: 28px;
+    height: 28px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s;
+
+    &:hover {
+      background: #e0a800;
+    }
+  }
+
+  // ========== BOUTONS D'ACTION ==========
+  
+  .btn-validate {
+    background: #28a745;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s;
+
+    &:hover {
+      background: #218838;
+    }
+  }
+
+  .btn-cancel {
+    background: #6c757d;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s;
+
+    &:hover {
+      background: #5a6268;
+    }
+  }
+
+  // ========== DEBUG ==========
+  
+  .debug-info {
+    background: #f0f0f0;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+    font-family: monospace;
+    font-size: 12px;
+    border-left: 4px solid #007bff;
+    
+    strong {
+      color: #007bff;
+    }
+  }
+
+  // ========== RESPONSIVE ==========
+  
+  @media (max-width: 768px) {
+    padding: 10px;
+    
+    .template-item {
+      padding: 10px;
+    }
+    
+    .template-display {
+      flex-direction: column;
+      gap: 10px;
+      align-items: flex-start;
+    }
+    
+    .template-dropdown {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 5px;
+    }
+    
+    .template-select {
+      width: 100%;
+    }
+    
+    .step-card {
+      padding: 12px;
+    }
+    
+    .step-content {
+      padding-right: 50px;
+    }
+    
+    .btn-delete {
+      position: static;
+      margin-left: 10px;
+    }
+    
+    .insert-form {
+      padding: 10px;
+      
+      .form-actions {
+        flex-direction: column;
+        gap: 5px;
+      }
+    }
+    
+    .btn-insert {
+      font-size: 11px;
+      padding: 6px 12px;
+    }
+    
+    .edit-form {
+      flex-direction: column;
+      gap: 5px;
+      align-items: stretch;
+    }
+    
+    .edit-actions {
+      justify-content: center;
+    }
+  }
+
+  @media (max-width: 480px) {
+    padding: 5px;
+    
+    .steps-container {
+      padding: 10px;
+    }
+    
+    .template-selector {
+      padding: 10px;
+    }
+    
+    .no-steps {
+      padding: 20px;
+    }
+    
+    .step-card {
+      padding: 10px;
+    }
+    
+    .step-content {
+      padding-right: 40px;
+    }
+    
+    .btn-delete {
+      width: 28px;
+      height: 28px;
+      font-size: 12px;
+    }
+    
+    .insert-form {
+      padding: 8px;
+    }
+    
+    .btn-insert {
+      font-size: 10px;
+      padding: 4px 8px;
+    }
+  }
+}
