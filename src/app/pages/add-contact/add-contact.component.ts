@@ -10,7 +10,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 
-import { SupabaseService } from '../../services/supabase.service';
+import { ContactService } from './../../services';
 
 @Component({
   selector: 'app-add-contact',
@@ -39,7 +39,7 @@ export class AddContactComponent {
   loading = false;
 
   constructor(
-    private supabaseService: SupabaseService,
+    private ContactService: ContactService,
     private router: Router
   ) {}
 
@@ -53,7 +53,7 @@ export class AddContactComponent {
     this.errorMessage = '';
 
     try {
-      await this.supabaseService.addContact({
+      await this.ContactService.addContact({
         contact_name: this.contact_name,
         email: this.email,
         phone: this.tel,
