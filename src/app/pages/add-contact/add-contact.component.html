@@ -7,24 +7,74 @@
 
 <div class="container">
   <form (ngSubmit)="ajouter()" #contactForm="ngForm">
+    <!-- Entreprise -->
     <mat-form-field appearance="fill" class="full-width">
-      <mat-label>Nom de l'entreprise</mat-label>
-      <input matInput [(ngModel)]="company_name" name="company_name" />
+      <mat-label>Entreprise</mat-label>
+      <mat-select 
+        [(ngModel)]="selectedCompanyId" 
+        name="selectedCompanyId"
+        (selectionChange)="onCompanySelectionChange($event.value)">
+        <mat-option *ngFor="let company of companies" [value]="company.id">
+          {{ company.name }}
+        </mat-option>
+        <mat-option value="create_new">
+          ➕ Créer une nouvelle entreprise
+        </mat-option>
+      </mat-select>
     </mat-form-field>
+
+    <!-- Champ pour nom de la nouvelle entreprise -->
+    <div *ngIf="creatingNewCompany" class="new-company-section">
+      <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Nom de la nouvelle entreprise</mat-label>
+        <input 
+          matInput 
+          [(ngModel)]="newCompanyName" 
+          name="newCompanyName" 
+          required
+          placeholder="Entrez le nom de l'entreprise" />
+      </mat-form-field>
+      
+      <div class="company-actions">
+        <button 
+          type="button" 
+          mat-button 
+          color="warn" 
+          (click)="cancelNewCompany()">
+          Annuler
+        </button>
+      </div>
+    </div>
 
     <mat-form-field appearance="fill" class="full-width">
       <mat-label>Nom du contact</mat-label>
-      <input matInput [(ngModel)]="contact_name" name="contact_name" required />
+      <input 
+        matInput 
+        [(ngModel)]="contact_name" 
+        name="contact_name" 
+        required 
+        placeholder="Prénom Nom" />
     </mat-form-field>
 
     <mat-form-field appearance="fill" class="full-width">
       <mat-label>Poste</mat-label>
-      <input matInput [(ngModel)]="position" name="position" />
+      <input 
+        matInput 
+        [(ngModel)]="position" 
+        name="position" 
+        placeholder="Directeur, Manager, etc." />
     </mat-form-field>
 
     <mat-form-field appearance="fill" class="full-width">
       <mat-label>Email</mat-label>
-      <input matInput [(ngModel)]="email" name="email" required #emailCtrl="ngModel" email />
+      <input 
+        matInput 
+        [(ngModel)]="email" 
+        name="email" 
+        required 
+        #emailCtrl="ngModel" 
+        email 
+        placeholder="exemple@email.com" />
       <div *ngIf="emailCtrl.invalid && emailCtrl.touched" class="error">
         Email invalide
       </div>
@@ -32,18 +82,37 @@
 
     <mat-form-field appearance="fill" class="full-width">
       <mat-label>Téléphone</mat-label>
-      <input matInput [(ngModel)]="tel" name="tel" />
+      <input 
+        matInput 
+        [(ngModel)]="tel" 
+        name="tel" 
+        placeholder="01 23 45 67 89" />
     </mat-form-field>
 
     <mat-form-field appearance="fill" class="full-width">
       <mat-label>Notes</mat-label>
-      <textarea matInput rows="3" [(ngModel)]="notes" name="notes"></textarea>
+      <textarea 
+        matInput 
+        rows="3" 
+        [(ngModel)]="notes" 
+        name="notes" 
+        placeholder="Notes additionnelles...">
+      </textarea>
     </mat-form-field>
 
-    <div *ngIf="errorMessage" class="error">{{ errorMessage }}</div>
+    <div *ngIf="errorMessage" class="error error-message">
+      {{ errorMessage }}
+    </div>
 
-    <button mat-raised-button color="primary" type="submit" [disabled]="loading">
-      {{ loading ? 'Ajout en cours...' : 'Ajouter' }}
-    </button>
+    <div class="form-actions">
+      <button 
+        mat-raised-button 
+        color="primary" 
+        type="submit" 
+        [disabled]="loading || contactForm.invalid || (creatingNewCompany && !newCompanyName.trim())">
+        <mat-icon *ngIf="loading">refresh</mat-icon>
+        {{ loading ? 'Ajout en cours...' : 'Ajouter le contact' }}
+      </button>
+    </div>
   </form>
 </div>

@@ -1,1 +1,65 @@
-<p>projects works!</p>
+<div class="projects-container">
+  <div class="header">
+    <h2 *ngIf="!contactId">Mes Projets</h2>
+    <h2 *ngIf="contactId && contactName">Projets de {{ contactName }}</h2>
+
+
+    <button mat-raised-button color="primary" [routerLink]="contactId ? ['/add-project', contactId] : ['/add-project']">
+      <mat-icon>add</mat-icon>
+      Nouveau Projet
+    </button>
+  </div>
+
+  <div *ngIf="loading" class="loading-container">
+    <mat-spinner></mat-spinner>
+    <p>Chargement des projets...</p>
+  </div>
+
+  <div *ngIf="!loading && projects.length === 0" class="empty-state">
+    <mat-icon>work_off</mat-icon>
+    <h3>Aucun projet</h3>
+    <p>Vous n'avez pas encore créé de projet.</p>
+    <button mat-raised-button color="primary" [routerLink]="contactId ? ['/add-project', contactId] : ['/add-project']">
+      Créer mon premier projet
+    </button>
+  </div>
+
+  <div *ngIf="!loading && projects.length > 0" class="projects-grid">
+    <mat-card *ngFor="let project of projects" class="project-card">
+      <mat-card-header>
+        <mat-card-title>{{ project.name }}</mat-card-title>
+        <mat-card-subtitle>
+          {{ project.contact?.contact_name }} - {{ project.contact?.company?.name }}
+        </mat-card-subtitle>
+      </mat-card-header>
+      
+      <mat-card-content>
+        <p *ngIf="project.description" class="description">{{ project.description }}</p>
+        <div class="project-stats">
+          <span class="stat">
+            <mat-icon>assignment</mat-icon>
+            {{ getCompletedSteps(project) }}/{{ getTotalSteps(project) }} étapes
+          </span>
+          <span class="stat">
+            <mat-icon>calendar_today</mat-icon>
+            {{ project.created_at | date:'short' }}
+          </span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" [style.width.%]="getProgress(project)"></div>
+        </div>
+      </mat-card-content>
+      
+      <mat-card-actions>
+        <button mat-button [routerLink]="['/project', project.id]">
+          <mat-icon>visibility</mat-icon>
+          Voir
+        </button>
+        <button mat-button color="warn" (click)="deleteProject(project.id, project.name)">
+          <mat-icon>delete</mat-icon>
+          Supprimer
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+</div>

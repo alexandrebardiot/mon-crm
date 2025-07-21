@@ -1,1 +1,122 @@
-<p>add-project works!</p>
+<div class="add-project-container">
+  <mat-card class="form-card">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>add</mat-icon>
+        Nouveau Projet
+      </mat-card-title>
+      <mat-card-subtitle>
+        Créez un nouveau projet pour suivre vos tâches et échéances
+      </mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <form [formGroup]="projectForm" (ngSubmit)="onSubmit()">
+        <!-- Nom du projet -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Nom du projet</mat-label>
+          <input matInput formControlName="name" placeholder="Entrez le nom du projet">
+          <mat-error *ngIf="name?.hasError('required')">
+            Le nom du projet est requis
+          </mat-error>
+          <mat-error *ngIf="name?.hasError('minlength')">
+            Le nom doit contenir au moins 2 caractères
+          </mat-error>
+        </mat-form-field>
+
+        <!-- Description -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Description</mat-label>
+          <textarea matInput formControlName="description"
+                    placeholder="Description du projet (optionnel)"
+                    rows="3"></textarea>
+        </mat-form-field>
+
+        <!-- Contact -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Contact</mat-label>
+          <mat-select formControlName="contact_id" (selectionChange)="onContactChange()">
+            <mat-option *ngFor="let contact of contacts" [value]="contact.id">
+              {{ contact.contact_name }} <span class="contact-company"> - {{ contact.company?.name }}</span>
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="contact_id?.hasError('required')">
+            Veuillez sélectionner un contact
+          </mat-error>
+        </mat-form-field>
+
+        <!-- Affichage automatique de l'entreprise -->
+        <mat-form-field appearance="outline" class="full-width" *ngIf="selectedContact?.company">
+            <mat-label>Entreprise</mat-label>
+            <input matInput [value]="selectedContact?.company?.name" disabled>
+        </mat-form-field>
+
+
+        <!-- Utiliser un template -->
+        <div class="template-section">
+          <mat-checkbox formControlName="use_template" (change)="onUseTemplateChange()">
+            Utiliser un modèle d'étapes
+          </mat-checkbox>
+
+          <div *ngIf="use_template?.value" class="template-options">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Modèle d'étapes</mat-label>
+              <mat-select formControlName="template_id">
+                <mat-option *ngFor="let template of templates" [value]="template.id">
+                  {{ template.name }}
+                </mat-option>
+              </mat-select>
+              <mat-error *ngIf="template_id?.hasError('required')">
+                Veuillez sélectionner un modèle
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Date de début</mat-label>
+              <input matInput [matDatepicker]="startPicker" formControlName="start_date">
+              <mat-datepicker-toggle matIconSuffix [for]="startPicker"></mat-datepicker-toggle>
+              <mat-datepicker #startPicker></mat-datepicker>
+              <mat-hint>Les échéances des étapes seront calculées à partir de cette date</mat-hint>
+            </mat-form-field>
+          </div>
+        </div>
+
+        <!-- Informations sur le contact sélectionné -->
+        <div *ngIf="selectedContact" class="contact-info">
+          <h4>Informations du contact</h4>
+          <div class="contact-details">
+            <div class="contact-item">
+              <mat-icon>person</mat-icon>
+              <span>{{ selectedContact.contact_name }}</span>
+            </div>
+            <div class="contact-item" *ngIf="selectedContact.email">
+              <mat-icon>email</mat-icon>
+              <span>{{ selectedContact.email }}</span>
+            </div>
+            <div class="contact-item" *ngIf="selectedContact.phone">
+              <mat-icon>phone</mat-icon>
+              <span>{{ selectedContact.phone }}</span>
+            </div>
+            <div class="contact-item" *ngIf="selectedContact.company">
+              <mat-icon>business</mat-icon>
+              <span>{{ selectedContact.company.name }}</span>
+            </div>
+          </div>
+        </div>
+      </form>
+    </mat-card-content>
+
+    <mat-card-actions align="end">
+      <button mat-button type="button" (click)="onCancel()" [disabled]="loading">
+        Annuler
+      </button>
+      <button mat-raised-button color="primary"
+              (click)="onSubmit()"
+              [disabled]="projectForm.invalid || loading">
+        <mat-spinner *ngIf="loading" diameter="20"></mat-spinner>
+        <mat-icon *ngIf="!loading">save</mat-icon>
+        {{ loading ? 'Création...' : 'Créer le projet' }}
+      </button>
+    </mat-card-actions>
+  </mat-card>
+</div>

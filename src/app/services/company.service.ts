@@ -8,6 +8,7 @@ import { Company } from './types';
 export class CompanyService {
   constructor(private supabaseService: SupabaseService) {}
 
+  // Récupérer toutes les entreprises (triées par nom)
   async getCompanies(): Promise<Company[]> {
     const { data, error } = await this.supabaseService.client
       .from('companies')
@@ -18,7 +19,20 @@ export class CompanyService {
     return data || [];
   }
 
-  async getCompanyById(id: string): Promise<Company | null> {
+  // Créer une entreprise avec juste un nom
+  async create(company: { name: string }): Promise<Company> {
+    const { data, error } = await this.supabaseService.client
+      .from('companies')
+      .insert([company])
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data!;
+  }
+
+  // (Optionnel) récupérer une entreprise par son id
+  async getById(id: string): Promise<Company | null> {
     const { data, error } = await this.supabaseService.client
       .from('companies')
       .select('*')
@@ -27,37 +41,5 @@ export class CompanyService {
 
     if (error) throw error;
     return data;
-  }
-
-  async addCompany(company: { name: string; sector?: string; address?: string }): Promise<Company | null> {
-    const { data, error } = await this.supabaseService.client
-      .from('companies')
-      .insert([company])
-      .select()
-      .single();
-
-    if (error) throw error;
-    return data;
-  }
-
-  async updateCompany(id: string, updates: Partial<Company>): Promise<Company | null> {
-    const { data, error } = await this.supabaseService.client
-      .from('companies')
-      .update(updates)
-      .eq('id', id)
-      .select()
-      .single();
-
-    if (error) throw error;
-    return data;
-  }
-
-  async deleteCompany(id: string): Promise<void> {
-    const { error } = await this.supabaseService.client
-      .from('companies')
-      .delete()
-      .eq('id', id);
-
-    if (error) throw error;
   }
 }

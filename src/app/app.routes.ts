@@ -8,13 +8,11 @@ import { ProjectsComponent } from './pages/projects/projects.component';
 import { ProjectDetailComponent } from './pages/project-detail/project-detail.component';
 import { AddProjectComponent } from './pages/add-project/add-project.component';
 import { CompanyDetailComponent } from './pages/company-detail/company-detail.component';
-import { AuthGuard } from './guards/auth.guard'; 
-
-import { RouterModule } from '@angular/router';
+import { AuthGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
   { path: '', component: DashboardComponent, canActivate: [AuthGuard] },
-  
+
   { path: 'login', component: LoginComponent },
 
   // Contacts
@@ -26,13 +24,16 @@ export const routes: Routes = [
   { path: 'project/:id', component: ProjectDetailComponent, canActivate: [AuthGuard] },
   { path: 'add-project', component: AddProjectComponent, canActivate: [AuthGuard] },
   { path: 'add-project/:contactId', component: AddProjectComponent, canActivate: [AuthGuard] },
+  { path: 'company/:companyId/projects', component: ProjectsComponent, canActivate: [AuthGuard] },
 
-  // Entreprises
-  { path: 'company/:id', component: CompanyDetailComponent, canActivate: [AuthGuard] },
+  { path: 'contact/:contactId/projects', component: ProjectsComponent, canActivate: [AuthGuard] },
 
+  // Planning
   { path: 'planning', component: DashboardComponent, canActivate: [AuthGuard] },
 
+  // Paramètres
   { path: 'steps-manager', component: StepsManagerComponent, canActivate: [AuthGuard] },
 
+  // Catch-all
   { path: '**', redirectTo: '', pathMatch: 'full' },
 ];

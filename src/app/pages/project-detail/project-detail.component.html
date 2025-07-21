@@ -1,1 +1,136 @@
-<p>project-detail works!</p>
+<div class="project-detail-container">
+  <div *ngIf="loading" class="loading-container">
+    <mat-spinner></mat-spinner>
+    <p>Chargement du projet...</p>
+  </div>
+
+  <div *ngIf="!loading && project" class="project-content">
+    <!-- Header -->
+    <div class="header">
+      <div class="header-info">
+        <h1>{{ project.name }}</h1>
+        <p class="project-subtitle">
+          {{ project.company?.name }} - {{ project.contact?.contact_name }} {{ project.contact?.contact_name }}
+        </p>
+      </div>
+      <div class="header-actions">
+        <button mat-button routerLink="/projects">
+          <mat-icon>arrow_back</mat-icon>
+          Retour
+        </button>
+        <button mat-button color="warn" (click)="deleteProject()">
+          <mat-icon>delete</mat-icon>
+          Supprimer
+        </button>
+      </div>
+    </div>
+
+    <!-- Project Info -->
+    <mat-card class="project-info">
+      <mat-card-header>
+        <mat-card-title>Informations du projet</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="info-grid">
+          <div class="info-item">
+            <strong>Description :</strong>
+            <p>{{ project.description || 'Aucune description' }}</p>
+          </div>
+          <div class="info-item">
+            <strong>Date de création :</strong>
+            <p>{{ project.created_at | date:'full' }}</p>
+          </div>
+          <div class="info-item">
+            <strong>Contact :</strong>
+            <p>
+              <a [routerLink]="['/contact', project.contact?.id]">
+                {{ project.contact?.contact_name }} {{ project.contact?.contact_name }}
+              </a>
+            </p>
+          </div>
+          <div class="info-item">
+            <strong>Entreprise :</strong>
+            <p>
+              <a [routerLink]="['/company', project.company?.id]">
+                {{ project.company?.name }}
+              </a>
+            </p>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Progress -->
+    <mat-card class="progress-card">
+      <mat-card-header>
+        <mat-card-title>Progression</mat-card-title>
+        <mat-card-subtitle>{{ getCompletedSteps() }}/{{ getTotalSteps() }} étapes terminées</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="progress-bar">
+          <div class="progress-fill" [style.width.%]="getProgress()"></div>
+        </div>
+        <div class="progress-text">{{ getProgress() | number:'1.0-0' }}%</div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Steps -->
+    <mat-card class="steps-card">
+      <mat-card-header>
+        <mat-card-title>Étapes du projet</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div *ngIf="projectSteps.length === 0" class="empty-steps">
+          <mat-icon>assignment</mat-icon>
+          <p>Aucune étape définie pour ce projet</p>
+        </div>
+
+        <div *ngFor="let step of projectSteps" class="step-item" [class.completed]="step.completed" [class.overdue]="isOverdue(step)">
+          <div class="step-checkbox">
+            <mat-checkbox 
+              [checked]="step.completed" 
+              (change)="toggleStepCompleted(step)">
+            </mat-checkbox>
+          </div>
+
+          <div class="step-content" *ngIf="editingStep !== step.id">
+            <div class="step-info">
+              <h4>{{ step.name }}</h4>
+              <p class="step-date" *ngIf="step.due_date">
+                <mat-icon>schedule</mat-icon>
+                Échéance : {{ step.due_date | date:'short' }}
+              </p>
+            </div>
+            <div class="step-actions">
+              <button mat-icon-button (click)="startEditingStep(step)">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button color="warn" (click)="deleteStep(step.id, step.name)">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+          </div>
+
+          <div class="step-edit" *ngIf="editingStep === step.id">
+            <mat-form-field appearance="outline" class="step-name-field">
+              <mat-label>Nom de l'étape</mat-label>
+              <input matInput [(ngModel)]="editingStepData.name" placeholder="Nom de l'étape">
+            </mat-form-field>
+            
+            <mat-form-field appearance="outline" class="step-date-field">
+              <mat-label>Date d'échéance</mat-label>
+              <input matInput [matDatepicker]="picker" [(ngModel)]="editingStepData.due_date">
+              <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+              <mat-datepicker #picker></mat-datepicker>
+            </mat-form-field>
+
+            <div class="edit-actions">
+              <button mat-button (click)="cancelEditingStep()">Annuler</button>
+              <button mat-raised-button color="primary" (click)="saveStep(step.id)">Sauvegarder</button>
+            </div>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>
