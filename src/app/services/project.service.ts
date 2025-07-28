@@ -247,4 +247,32 @@ export class ProjectService {
       throw error;
     }
   }
+  // Méthode à ajouter dans votre ProjectService si elle n'existe pas déjà
+
+async createProjectStep(projectId: string, step: {
+  name: string;
+  description?: string;
+  due_date?: string;
+  position?: number;
+  completed?: boolean;
+}): Promise<ProjectStep | null> {
+  const { data, error } = await this.supabaseService.client
+    .from('project_steps')
+    .insert([{
+      project_id: projectId,
+      name: step.name,
+      description: step.description || '',
+      due_date: step.due_date,
+      position: step.position || 0,
+      completed: step.completed || false,
+    }])
+    .select()
+    .single();
+
+  if (error) {
+    console.error('Erreur lors de la création de l\'étape:', error);
+    throw error;
+  }
+  return data;
+}
 }

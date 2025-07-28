@@ -1,0 +1,182 @@
+<div class="planning-container">
+  <!-- En-tête avec titre et actions -->
+  <div class="planning-header">
+    <h2>
+      <mat-icon>event_note</mat-icon>
+      Planning des tâches
+    </h2>
+    
+    <div class="header-actions">
+      <button mat-raised-button color="primary" (click)="refreshTasks()">
+        <mat-icon>refresh</mat-icon>
+        Actualiser
+      </button>
+    </div>
+  </div>
+
+  <!-- Cartes de résumé -->
+  <div class="summary-cards" *ngIf="summary">
+    <mat-card class="summary-card overdue" *ngIf="summary.overdue > 0">
+      <mat-card-content>
+        <div class="summary-content">
+          <mat-icon>warning</mat-icon>
+          <div class="summary-text">
+            <span class="number">{{ summary.overdue }}</span>
+            <span class="label">En retard</span>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="summary-card today">
+      <mat-card-content>
+        <div class="summary-content">
+          <mat-icon>today</mat-icon>
+          <div class="summary-text">
+            <span class="number">{{ summary.today }}</span>
+            <span class="label">Aujourd'hui</span>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="summary-card upcoming">
+      <mat-card-content>
+        <div class="summary-content">
+          <mat-icon>upcoming</mat-icon>
+          <div class="summary-text">
+            <span class="number">{{ summary.upcoming }}</span>
+            <span class="label">À venir</span>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Contenu principal avec onglets -->
+  <div class="planning-content" *ngIf="!loading; else loadingTemplate">
+    <mat-tab-group>
+      <mat-tab *ngFor="let group of taskGroups; let i = index">
+        <ng-template mat-tab-label>
+          <span 
+            [matBadge]="group.tasks.length"
+            [matBadgeHidden]="group.tasks.length === 0"
+            matBadgeColor="accent">
+            {{ group.label }}
+          </span>
+        </ng-template>
+
+        <div class="task-group" [attr.data-group]="i">
+          <div class="task-list" *ngIf="group.tasks.length > 0; else emptyTemplate">
+            <div 
+              class="task-card"
+              *ngFor="let task of group.tasks; trackBy: trackByTaskId"
+              [class.selected]="selectedTask?.id === task.id"
+              (click)="onSelectTask(task)">
+              
+              <div class="task-header">
+                <div class="task-checkbox">
+                  <mat-icon 
+                    class="completion-icon"
+                    [class.completed]="task.completed"
+                    (click)="$event.stopPropagation(); onToggleComplete(task)">
+                    {{ task.completed ? 'check_circle' : 'radio_button_unchecked' }}
+                  </mat-icon>
+                </div>
+                
+                <div class="task-info">
+                  <h3 class="task-title" [class.completed]="task.completed">
+                    {{ task.name }}
+                  </h3>
+                  
+                  <!-- Nom du projet sous le titre -->
+                  <div class="project-name" *ngIf="task.project_name">
+                    <mat-icon class="project-icon" aria-hidden="true" fontIcon="folder"></mat-icon>
+                    {{ task.project_name }}
+                  </div>
+
+                  <div class="task-meta" *ngIf="task.due_date || task.description">
+                    <span class="due-date" *ngIf="task.due_date">
+                      <mat-icon>schedule</mat-icon>
+                      {{ task.due_date | date:'dd/MM/yyyy HH:mm' }}
+                    </span>
+                    <span class="description" *ngIf="task.description">
+                      {{ task.description }}
+                    </span>
+                  </div>
+                </div>
+                
+                <div class="task-actions">
+                  <button 
+                    mat-icon-button 
+                    class="action-button"
+                    (click)="$event.stopPropagation(); onAssignDate(task)"
+                    matTooltip="Planifier">
+                    <mat-icon>event</mat-icon>
+                  </button>
+                  
+                  <button 
+                    mat-icon-button 
+                    class="action-button"
+                    (click)="$event.stopPropagation(); onSetReminder(task)"
+                    matTooltip="Rappel">
+                    <mat-icon>notifications</mat-icon>
+                  </button>
+                  
+                  <button 
+                    mat-icon-button 
+                    class="action-button"
+                    (click)="$event.stopPropagation(); onEditTask(task)"
+                    matTooltip="Modifier">
+                    <mat-icon>edit</mat-icon>
+                  </button>
+                  
+                  <button 
+                    mat-icon-button 
+                    class="action-button delete"
+                    (click)="$event.stopPropagation(); onDeleteTask(task)"
+                    matTooltip="Supprimer">
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </div>
+              </div>
+              
+              <!-- Détails étendus si la tâche est sélectionnée -->
+              <div class="task-details" *ngIf="selectedTask?.id === task.id">
+                <div class="task-extended-info">
+                  <div class="info-row" *ngIf="task.project_name">
+                    <mat-icon>folder</mat-icon>
+                    <span>Projet : {{ task.project_name }}</span>
+                  </div>
+                  <div class="info-row" *ngIf="task.position">
+                    <mat-icon>sort</mat-icon>
+                    <span>Position : {{ task.position }}</span>
+                  </div>
+                  <div class="info-row" *ngIf="task.created_at">
+                    <mat-icon>add</mat-icon>
+                    <span>Créée le : {{ task.created_at | date:'dd/MM/yyyy à HH:mm' }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <ng-template #emptyTemplate>
+            <div class="empty-state">
+              <mat-icon>check_circle_outline</mat-icon>
+              <p>Aucune tâche {{ getEmptyStateText(group.label) }}</p>
+            </div>
+          </ng-template>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  </div>
+
+  <!-- Template de chargement -->
+  <ng-template #loadingTemplate>
+    <div class="loading-container">
+      <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
+      <p>Chargement des tâches...</p>
+    </div>
+  </ng-template>
+</div>

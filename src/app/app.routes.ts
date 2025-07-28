@@ -7,8 +7,8 @@ import { StepsManagerComponent } from './pages/steps-manager/steps-manager.compo
 import { ProjectsComponent } from './pages/projects/projects.component';
 import { ProjectDetailComponent } from './pages/project-detail/project-detail.component';
 import { AddProjectComponent } from './pages/add-project/add-project.component';
-import { CompanyDetailComponent } from './pages/company-detail/company-detail.component';
 import { AuthGuard } from './guards/auth.guard';
+import { PlanningComponent } from './pages/planning/planning.component';
 
 export const routes: Routes = [
   { path: '', component: DashboardComponent, canActivate: [AuthGuard] },
@@ -29,7 +29,7 @@ export const routes: Routes = [
   { path: 'contact/:contactId/projects', component: ProjectsComponent, canActivate: [AuthGuard] },
 
   // Planning
-  { path: 'planning', component: DashboardComponent, canActivate: [AuthGuard] },
+  { path: 'planning', component: PlanningComponent, canActivate: [AuthGuard] },
 
   // Paramètres
   { path: 'steps-manager', component: StepsManagerComponent, canActivate: [AuthGuard] },

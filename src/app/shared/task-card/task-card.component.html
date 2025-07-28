@@ -1,0 +1,67 @@
+<mat-card class="task-card" 
+          [class.completed]="task.completed"
+          [class.overdue]="isOverdue"
+          [class.selected]="isSelected">
+  <mat-card-content>
+    <div class="task-header">
+      <mat-checkbox 
+        [checked]="task.completed"
+        (change)="onToggleComplete()"
+        color="primary">
+      </mat-checkbox>
+      
+      <div class="task-content" (click)="onSelect()">
+        <h4 class="task-name" [class.completed-text]="task.completed">
+          {{ task.name }}
+        </h4>
+        <p class="task-description" *ngIf="task.description">
+          {{ task.description }}
+        </p>
+      </div>
+
+      <button mat-icon-button [matMenuTriggerFor]="menu">
+        <mat-icon>more_vert</mat-icon>
+      </button>
+    </div>
+
+    <div class="task-info" *ngIf="task.due_date || task.reminder_date">
+      <div class="date-info">
+        <mat-chip 
+          *ngIf="task.due_date"
+          [color]="getDateChipColor()"
+          [disabled]="task.completed">
+          <mat-icon matChipAvatar>event</mat-icon>
+          {{ formatDate(task.due_date) }}
+        </mat-chip>
+        
+        <mat-chip 
+          *ngIf="task.reminder_date"
+          color="accent"
+          [disabled]="task.completed">
+          <mat-icon matChipAvatar>notifications</mat-icon>
+          {{ formatTime(task.reminder_date) }}
+        </mat-chip>
+      </div>
+    </div>
+  </mat-card-content>
+
+  <mat-menu #menu="matMenu">
+    <button mat-menu-item (click)="onEdit()">
+      <mat-icon>edit</mat-icon>
+      <span>Modifier</span>
+    </button>
+    <button mat-menu-item (click)="onSetReminder()">
+      <mat-icon>notification_add</mat-icon>
+      <span>Définir rappel</span>
+    </button>
+    <button mat-menu-item (click)="onAssignDate()">
+      <mat-icon>date_range</mat-icon>
+      <span>Planifier</span>
+    </button>
+    <mat-divider></mat-divider>
+    <button mat-menu-item (click)="onDelete()" class="delete-action">
+      <mat-icon>delete</mat-icon>
+      <span>Supprimer</span>
+    </button>
+  </mat-menu>
+</mat-card>

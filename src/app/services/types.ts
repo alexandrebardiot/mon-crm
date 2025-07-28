@@ -46,16 +46,6 @@ export interface Project {
   project_steps?: ProjectStep[];
 }
 
-export interface ProjectStep {
-  id: string;
-  project_id: string;
-  name: string;
-  position: number;
-  due_date: string;
-  completed: boolean;
-  created_at: string;
-}
-
 // DTOs pour les services
 
 export interface CreateCompanyDto {
@@ -108,4 +98,57 @@ export interface ProjectServiceInterface {
   createProject(projectData: CreateProjectDto): Promise<Project>;
   updateProject(id: string, projectData: Partial<CreateProjectDto>): Promise<Project>;
   deleteProject(id: string): Promise<void>;
+}
+export interface ProjectStep {
+  id: string;
+  project_id: string;
+  name: string;
+  description?: string;
+  position: number;
+  due_date?: Date;
+  created_at: Date;
+  completed: boolean;
+  reminder_date?: Date;
+  project?: { name: string };
+  project_name?: string;
+}
+
+export interface CreateProjectStepRequest {
+  project_id: string;
+  name: string;
+  description?: string;
+  position: number;
+  due_date?: Date;
+  reminder_date?: Date;
+}
+
+export interface UpdateProjectStepRequest {
+  name?: string;
+  description?: string;
+  position?: number;
+  due_date?: Date;
+  completed?: boolean;
+  reminder_date?: Date;
+}
+
+export interface TaskGroup {
+  label: string;
+  tasks: ProjectStep[];
+  color: string;
+}
+
+export interface WeekDay {
+  date: Date;
+  dayName: string;
+  dayNameShort: string;
+  dayNumber: number;
+  isToday: boolean;
+  isWeekend: boolean;
+  tasks: ProjectStep[];
+}
+
+export interface NotificationData {
+  message: string;
+  type: 'info' | 'warning' | 'error' | 'success';
+  duration?: number;
 }
