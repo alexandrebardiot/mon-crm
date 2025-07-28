@@ -1,0 +1,120 @@
+.scheduler-container {
+  padding: 1rem;
+  font-family: 'Segoe UI', sans-serif;
+
+  .scheduler-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+
+    h2 {
+      margin: 0;
+    }
+
+    .view-selector {
+      display: flex;
+      gap: 0.5rem;
+
+      button {
+        background: none;
+        border: 1px solid #ccc;
+        padding: 0.4rem 1rem;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background 0.3s;
+
+        &.active {
+          background-color: #007bff;
+          color: white;
+          border-color: #007bff;
+        }
+
+        &:hover {
+          background-color: #e9ecef;
+        }
+      }
+    }
+  }
+
+  .scheduler-grid {
+    display: grid;
+    gap: 1rem;
+
+    &.jour {
+      grid-template-columns: repeat(1, 1fr);
+    }
+
+    &.semaine {
+      grid-template-columns: repeat(5, 1fr);
+    }
+
+    &.mois {
+      grid-template-columns: repeat(5, 1fr); // Simplement 5 semaines fictives
+    }
+
+    .day-column {
+      background-color: #f8f9fa;
+      border-radius: 8px;
+      padding: 0.75rem;
+      box-shadow: 0 0 4px rgba(0, 0, 0, 0.1);
+
+      .day-header {
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+        color: #343a40;
+
+        &.today {
+          color: #007bff;
+        }
+      }
+
+      .task-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+
+        .task-card {
+          background-color: white;
+          border-left: 4px solid #007bff;
+          padding: 0.5rem 0.75rem;
+          border-radius: 4px;
+          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+          cursor: pointer;
+          transition: all 0.3s;
+
+          .task-project {
+            font-size: 0.85rem;
+            color: #6c757d;
+            font-weight: 500;
+          }
+
+          .task-name {
+            font-size: 0.95rem;
+            font-weight: bold;
+          }
+
+          &:hover {
+            background-color: #f1f1f1;
+          }
+
+          &.completed {
+            border-left-color: green;
+            background-color: #e6ffea;
+
+            .task-name {
+              text-decoration: line-through;
+              color: green;
+            }
+          }
+        }
+
+        .no-tasks {
+          font-size: 0.85rem;
+          color: #999;
+          font-style: italic;
+        }
+      }
+    }
+  }
+}

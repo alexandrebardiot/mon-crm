@@ -1,1 +1,192 @@
-<p>add-project works!</p>
+<mat-card class="project-form-card" *ngIf="!loading; else loadingTpl">
+  <form [formGroup]="projectForm" (ngSubmit)="onSubmit()">
+    <mat-card-title>Créer un projet à partir d'un modèle</mat-card-title>
+    <mat-card-content>
+
+      <!-- Informations de base -->
+      <div class="basic-info-section">
+        <mat-form-field appearance="fill" class="w-full mb-4">
+          <mat-label>Nom du projet</mat-label>
+          <input matInput formControlName="name" required />
+          <mat-error *ngIf="projectForm.get('name')?.hasError('required')">
+            Le nom est obligatoire
+          </mat-error>
+          <mat-error *ngIf="projectForm.get('name')?.hasError('minlength')">
+            Le nom doit contenir au moins 2 caractères
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="fill" class="w-full mb-4">
+          <mat-label>Description</mat-label>
+          <textarea matInput formControlName="description" rows="3"></textarea>
+        </mat-form-field>
+
+        <mat-form-field appearance="fill" class="w-full mb-4">
+          <mat-label>Contact associé</mat-label>
+          <mat-select formControlName="contact_id" required>
+            <mat-option *ngFor="let contact of contacts" [value]="contact.id">
+              {{ contact.contact_name }}
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="projectForm.get('contact_id')?.hasError('required')">
+            Veuillez sélectionner un contact
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="fill" class="w-full mb-4">
+          <mat-label>Modèle de projet</mat-label>
+          <mat-select formControlName="template_id" required>
+            <mat-option *ngFor="let template of templates" [value]="template.id">
+              {{ template.name }}
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="projectForm.get('template_id')?.hasError('required')">
+            Veuillez sélectionner un modèle
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <!-- Section de planification -->
+      <div *ngIf="projectSteps.length > 0" class="planning-section">
+        <div class="planning-header">
+          <h3>Planification des étapes</h3>
+          <div class="planning-info" *ngIf="getUnscheduledStepsCount() > 0">
+            <mat-icon class="warning-icon">warning</mat-icon>
+            <span>{{ getUnscheduledStepsCount() }} étape(s) non planifiée(s)</span>
+          </div>
+          <div class="planning-info success" *ngIf="getUnscheduledStepsCount() === 0">
+            <mat-icon class="success-icon">check_circle</mat-icon>
+            <span>Toutes les étapes sont planifiées</span>
+          </div>
+        </div>
+
+        <!-- Liste des étapes -->
+        <div class="steps-list">
+          <h4>Étapes du projet :</h4>
+          <div class="steps-grid">
+            <div
+              *ngFor="let step of projectSteps; index as i"
+              class="step-card"
+              [class.selected]="selectedStepIndex === i"
+              [class.scheduled]="isStepScheduled(step)"
+              (click)="selectStep(i)"
+              [matTooltip]="selectedStepIndex === i ? 'Cliquez sur un jour pour planifier' : 'Cliquez pour sélectionner'"
+            >
+              <div class="step-content">
+                <span class="step-name">{{ step.name }}</span>
+                <div class="step-status">
+                  <mat-icon *ngIf="isStepScheduled(step)" class="scheduled-icon">event</mat-icon>
+                  <mat-icon *ngIf="!isStepScheduled(step)" class="unscheduled-icon">schedule</mat-icon>
+                </div>
+              </div>
+              <div *ngIf="step.due_date" class="scheduled-date">
+                Planifiée le {{ step.due_date | date:'dd/MM' }}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Calendrier de planification -->
+        <div class="planning-calendar">
+          <div class="calendar-header">
+            <button 
+              mat-icon-button 
+              type="button" 
+              (click)="navigateWeek('prev')"
+              matTooltip="Semaine précédente"
+            >
+              <mat-icon>chevron_left</mat-icon>
+            </button>
+            
+            <h4 class="week-title">
+              {{ weekDays[0].dayNumber }} - {{ weekDays[6].dayNumber }}
+            </h4>
+            
+            <button 
+              mat-icon-button 
+              type="button" 
+              (click)="navigateWeek('next')"
+              matTooltip="Semaine suivante"
+            >
+              <mat-icon>chevron_right</mat-icon>
+            </button>
+          </div>
+
+          <div class="calendar-grid">
+            <div
+              *ngFor="let day of weekDays; index as dayIndex"
+              class="day-column"
+              [class.today]="day.isToday"
+              [class.clickable]="selectedStepIndex !== null"
+              (click)="assignStepToDay(dayIndex)"
+              [matTooltip]="selectedStepIndex !== null ? 'Cliquer pour assigner l\'étape sélectionnée' : day.tasks.length + ' tâche(s) planifiée(s)'"
+            >
+              <!-- En-tête du jour -->
+              <div class="day-header">
+                <div class="day-name">{{ day.dayName }}</div>
+                <div class="day-number">{{ day.dayNumber }}</div>
+              </div>
+
+              <!-- Indicateur de charge -->
+              <div class="load-indicator" [class]="getLoadIndicatorClass(dayIndex)">
+                <div class="load-bar"></div>
+                <span class="task-count">{{ getTasksCountForDay(dayIndex) }}</span>
+              </div>
+
+              <!-- Tâches planifiées -->
+              <div class="tasks-container">
+                <div
+                  *ngFor="let task of day.tasks"
+                  class="task-chip"
+                  [matTooltip]="task.name"
+                >
+                  {{ task.name.length > 15 ? (task.name | slice:0:15) + '...' : task.name }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Instructions -->
+        <div class="instructions" *ngIf="selectedStepIndex !== null">
+          <mat-icon>info</mat-icon>
+          <span>Étape sélectionnée : <strong>{{ projectSteps[selectedStepIndex].name }}</strong>. Cliquez sur un jour pour l'assigner.</span>
+        </div>
+        <div class="instructions" *ngIf="selectedStepIndex === null && projectSteps.length > 0">
+          <mat-icon>touch_app</mat-icon>
+          <span>Cliquez d'abord sur une étape, puis sur un jour du calendrier pour la planifier.</span>
+        </div>
+      </div>
+
+    </mat-card-content>
+
+    <mat-card-actions class="form-actions">
+      <button
+        mat-raised-button
+        color="primary"
+        type="submit"
+        [disabled]="!canSubmit()"
+        class="submit-button"
+      >
+        <mat-icon>add</mat-icon>
+        Créer le projet
+      </button>
+      
+      <button 
+        mat-button 
+        type="button" 
+        (click)="onCancel()"
+        class="cancel-button"
+      >
+        Annuler
+      </button>
+    </mat-card-actions>
+  </form>
+</mat-card>
+
+<ng-template #loadingTpl>
+  <div class="loading-container">
+    <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
+    <p>Chargement...</p>
+  </div>
+</ng-template>

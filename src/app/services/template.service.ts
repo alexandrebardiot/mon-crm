@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { SupabaseService } from './supabase.service';
-import { Template } from './types';
+import { Template, ProjectStep } from './types';
 
 @Injectable({
   providedIn: 'root',
@@ -27,6 +27,17 @@ export class TemplateService {
 
     if (error) throw error;
     return data;
+  }
+
+  async getTemplateSteps(templateId: string): Promise<ProjectStep[]> {
+    const { data, error } = await this.supabaseService.client
+      .from('steps') // ou 'template_steps' si c’est ton nom réel
+      .select('*')
+      .eq('template_id', templateId)
+      .order('position', { ascending: true });
+
+    if (error) throw error;
+    return data || [];
   }
 
   async addTemplate(name: string): Promise<Template | null> {

@@ -2,10 +2,11 @@
   <span class="spacer"></span>
 
   <button mat-button routerLink="/">Dashboard</button>
+  <button mat-button routerLink="/projects">Projets</button>
   <button mat-button routerLink="/planning">Planning</button>
 
   <mat-menu #settingsMenu="matMenu">
-    <a mat-menu-item routerLink="/steps-manager">Gestion des étapes</a>
+    <button mat-menu-item routerLink="/steps-manager">Gestion des étapes</button>
   </mat-menu>
 
   <button mat-button [matMenuTriggerFor]="settingsMenu">Paramètres</button>

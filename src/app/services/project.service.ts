@@ -17,19 +17,24 @@ export class ProjectService {
   async getProjects(): Promise<Project[]> {
     const user = await this.authService.getUser();
     if (!user) throw new Error('Utilisateur non connecté');
-    
+
     const { data, error } = await this.supabaseService.client
       .from('projects')
       .select(`
         *,
-        contact:contacts(*),
-        company:companies(*),
+        contact:contacts(
+          *,
+          company:companies(*)
+        ),
         project_steps(*)
       `)
-      .eq('created_by', user.id)
+      .eq('create_by', user.id) // correction : create_by
       .order('created_at', { ascending: false });
 
-    if (error) throw error;
+    if (error) {
+      console.error('Erreur lors de la récupération des projets:', error);
+      throw error;
+    }
     return data || [];
   }
 
@@ -38,34 +43,44 @@ export class ProjectService {
       .from('projects')
       .select(`
         *,
-        contact:contacts(*),
-        company:companies(*),
+        contact:contacts(
+          *,
+          company:companies(*)
+        ),
         project_steps(*)
       `)
       .eq('id', id)
       .single();
 
-    if (error) throw error;
+    if (error) {
+      console.error('Erreur lors de la récupération du projet:', error);
+      throw error;
+    }
     return data;
   }
 
   async getProjectsByContact(contactId: string): Promise<Project[]> {
     const user = await this.authService.getUser();
     if (!user) throw new Error('Utilisateur non connecté');
-    
+
     const { data, error } = await this.supabaseService.client
       .from('projects')
       .select(`
         *,
-        contact:contacts(*),
-        company:companies(*),
+        contact:contacts(
+          *,
+          company:companies(*)
+        ),
         project_steps(*)
       `)
       .eq('contact_id', contactId)
-      .eq('created_by', user.id)
+      .eq('create_by', user.id) // correction : create_by
       .order('created_at', { ascending: false });
 
-    if (error) throw error;
+    if (error) {
+      console.error('Erreur lors de la récupération des projets par contact:', error);
+      throw error;
+    }
     return data || [];
   }
 
@@ -73,22 +88,29 @@ export class ProjectService {
     name: string;
     description?: string;
     contact_id: string;
-    company_id: string;
   }): Promise<Project | null> {
     const user = await this.authService.getUser();
     if (!user) throw new Error('Utilisateur non connecté');
 
     const { data, error } = await this.supabaseService.client
       .from('projects')
-      .insert([{ ...project, created_by: user.id }])
+      .insert([{ 
+        ...project, 
+        create_by: user.id // correction : create_by
+      }])
       .select(`
         *,
-        contact:contacts(*),
-        company:companies(*)
+        contact:contacts(
+          *,
+          company:companies(*)
+        )
       `)
       .single();
 
-    if (error) throw error;
+    if (error) {
+      console.error('Erreur lors de la création du projet:', error);
+      throw error;
+    }
     return data;
   }
 
@@ -99,31 +121,47 @@ export class ProjectService {
       .eq('id', id)
       .select(`
         *,
-        contact:contacts(*),
-        company:companies(*)
+        contact:contacts(
+          *,
+          company:companies(*)
+        )
       `)
       .single();
 
-    if (error) throw error;
+    if (error) {
+      console.error('Erreur lors de la mise à jour du projet:', error);
+      throw error;
+    }
     return data;
   }
 
   async deleteProject(id: string): Promise<void> {
-    // Supprimer d'abord les étapes associées
-    const { error: stepsError } = await this.supabaseService.client
-      .from('project_steps')
-      .delete()
-      .eq('project_id', id);
+    try {
+      // Supprimer d'abord les étapes associées
+      const { error: stepsError } = await this.supabaseService.client
+        .from('project_steps')
+        .delete()
+        .eq('project_id', id);
 
-    if (stepsError) throw stepsError;
+      if (stepsError) {
+        console.error('Erreur lors de la suppression des étapes:', stepsError);
+        throw stepsError;
+      }
 
-    // Puis supprimer le projet
-    const { error } = await this.supabaseService.client
-      .from('projects')
-      .delete()
-      .eq('id', id);
+      // Puis supprimer le projet
+      const { error } = await this.supabaseService.client
+        .from('projects')
+        .delete()
+        .eq('id', id);
 
-    if (error) throw error;
+      if (error) {
+        console.error('Erreur lors de la suppression du projet:', error);
+        throw error;
+      }
+    } catch (error) {
+      console.error('Erreur lors de la suppression du projet:', error);
+      throw error;
+    }
   }
 
   // ========== PROJECT STEPS ==========
@@ -135,7 +173,10 @@ export class ProjectService {
       .eq('project_id', projectId)
       .order('position', { ascending: true });
 
-    if (error) throw error;
+    if (error) {
+      console.error('Erreur lors de la récupération des étapes:', error);
+      throw error;
+    }
     return data || [];
   }
 
@@ -144,28 +185,36 @@ export class ProjectService {
     templateId: string,
     startDate: Date = new Date()
   ): Promise<ProjectStep[]> {
-    const templateSteps = await this.stepService.getStepsByTemplate(templateId);
+    try {
+      const templateSteps = await this.stepService.getStepsByTemplate(templateId);
 
-    const projectSteps = templateSteps.map((step) => {
-      const dueDate = new Date(startDate);
-      dueDate.setDate(dueDate.getDate() + step.default_due_days);
+      const projectSteps = templateSteps.map((step) => {
+        const dueDate = new Date(startDate);
+        dueDate.setDate(dueDate.getDate() + step.default_due_days);
 
-      return {
-        project_id: projectId,
-        name: step.name,
-        position: step.position,
-        due_date: dueDate.toISOString().split('T')[0],
-        completed: false,
-      };
-    });
+        return {
+          project_id: projectId,
+          name: step.name,
+          position: step.position,
+          due_date: dueDate.toISOString().split('T')[0],
+          completed: false,
+        };
+      });
 
-    const { data, error } = await this.supabaseService.client
-      .from('project_steps')
-      .insert(projectSteps)
-      .select();
+      const { data, error } = await this.supabaseService.client
+        .from('project_steps')
+        .insert(projectSteps)
+        .select();
 
-    if (error) throw error;
-    return data || [];
+      if (error) {
+        console.error('Erreur lors de la création des étapes depuis le template:', error);
+        throw error;
+      }
+      return data || [];
+    } catch (error) {
+      console.error('Erreur lors de la création des étapes depuis le template:', error);
+      throw error;
+    }
   }
 
   async updateProjectStep(id: string, updates: Partial<ProjectStep>): Promise<ProjectStep | null> {
@@ -176,7 +225,10 @@ export class ProjectService {
       .select()
       .single();
 
-    if (error) throw error;
+    if (error) {
+      console.error('Erreur lors de la mise à jour de l\'étape:', error);
+      throw error;
+    }
     return data;
   }
 
@@ -190,6 +242,37 @@ export class ProjectService {
       .delete()
       .eq('id', id);
 
-    if (error) throw error;
+    if (error) {
+      console.error('Erreur lors de la suppression de l\'étape:', error);
+      throw error;
+    }
   }
+  // Méthode à ajouter dans votre ProjectService si elle n'existe pas déjà
+
+async createProjectStep(projectId: string, step: {
+  name: string;
+  description?: string;
+  due_date?: string;
+  position?: number;
+  completed?: boolean;
+}): Promise<ProjectStep | null> {
+  const { data, error } = await this.supabaseService.client
+    .from('project_steps')
+    .insert([{
+      project_id: projectId,
+      name: step.name,
+      description: step.description || '',
+      due_date: step.due_date,
+      position: step.position || 0,
+      completed: step.completed || false,
+    }])
+    .select()
+    .single();
+
+  if (error) {
+    console.error('Erreur lors de la création de l\'étape:', error);
+    throw error;
+  }
+  return data;
+}
 }

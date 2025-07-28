@@ -1,0 +1,490 @@
+// Variables
+$primary-color: #1976d2;
+$accent-color: #ff4081;
+$warn-color: #f44336;
+$success-color: #4caf50;
+$warning-color: #ff9800;
+$text-primary: rgba(0, 0, 0, 0.87);
+$text-secondary: rgba(0, 0, 0, 0.54);
+$text-disabled: rgba(0, 0, 0, 0.38);
+$border-color: rgba(0, 0, 0, 0.12);
+
+// Conteneur principal
+.planning-container {
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+  background-color: #fafafa;
+  min-height: 100vh;
+}
+
+// En-tête
+.planning-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  padding: 16px 0;
+  
+  h2 {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 0;
+    color: $text-primary;
+    font-weight: 500;
+    font-size: 1.5rem;
+    
+    mat-icon {
+      color: $primary-color;
+      font-size: 28px;
+      width: 28px;
+      height: 28px;
+    }
+  }
+}
+
+.header-actions {
+  display: flex;
+  gap: 12px;
+  
+  button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    
+    mat-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+    }
+  }
+}
+
+// Cartes de résumé
+.summary-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.summary-card {
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  animation: fadeInUp 0.3s ease-out;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+  
+  &.overdue {
+    border-left: 4px solid $warn-color;
+    
+    .summary-content mat-icon {
+      color: $warn-color;
+    }
+    
+    .summary-text .number {
+      color: $warn-color;
+    }
+  }
+  
+  &.today {
+    border-left: 4px solid $warning-color;
+    
+    .summary-content mat-icon {
+      color: $warning-color;
+    }
+    
+    .summary-text .number {
+      color: $warning-color;
+    }
+  }
+  
+  &.upcoming {
+    border-left: 4px solid $success-color;
+    
+    .summary-content mat-icon {
+      color: $success-color;
+    }
+    
+    .summary-text .number {
+      color: $success-color;
+    }
+  }
+}
+
+.summary-content {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 8px 0;
+  
+  mat-icon {
+    font-size: 36px;
+    width: 36px;
+    height: 36px;
+    color: $text-secondary;
+  }
+}
+
+.summary-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  
+  .number {
+    font-size: 1.75rem;
+    font-weight: 700;
+    line-height: 1;
+  }
+  
+  .label {
+    font-size: 0.875rem;
+    color: $text-secondary;
+    font-weight: 500;
+  }
+}
+
+// Contenu principal
+.planning-content {
+  margin-top: 16px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  
+  ::ng-deep {
+    .mat-tab-group {
+      .mat-tab-header {
+        border-bottom: 1px solid $border-color;
+        
+        .mat-tab-label {
+          min-width: 120px;
+          padding: 0 16px;
+          
+          .mat-badge {
+            margin-left: 8px;
+          }
+        }
+      }
+      
+      .mat-tab-body-wrapper {
+        .mat-tab-body {
+          .mat-tab-body-content {
+            overflow: visible;
+          }
+        }
+      }
+    }
+  }
+}
+
+// Groupes de tâches
+.task-group {
+  padding: 24px;
+  min-height: 200px;
+  animation: fadeInUp 0.4s ease-out;
+}
+
+.task-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+// Cartes de tâche
+.task-card {
+  background: white;
+  border: 1px solid $border-color;
+  border-radius: 8px;
+  padding: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  animation: fadeInUp 0.2s ease-out;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-color: $primary-color;
+  }
+  
+  &.selected {
+    border-color: $primary-color;
+    box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.2);
+  }
+}
+
+.task-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.task-checkbox {
+  flex-shrink: 0;
+  padding-top: 2px;
+  
+  .completion-icon {
+    font-size: 24px;
+    width: 24px;
+    height: 24px;
+    color: $text-disabled;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    
+    &:hover {
+      color: $primary-color;
+      transform: scale(1.1);
+    }
+    
+    &.completed {
+      color: $success-color;
+    }
+  }
+}
+
+.task-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.task-title {
+  margin: 0 0 8px 0;
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: $text-primary;
+  line-height: 1.3;
+  word-wrap: break-word;
+  
+  &.completed {
+    text-decoration: line-through;
+    color: $text-secondary;
+  }
+}
+
+.task-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  
+  .due-date {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.875rem;
+    color: $text-secondary;
+    
+    mat-icon {
+      font-size: 16px;
+      width: 16px;
+      height: 16px;
+    }
+  }
+  
+  .description {
+    font-size: 0.875rem;
+    color: $text-secondary;
+    line-height: 1.4;
+    word-wrap: break-word;
+  }
+}
+
+.task-actions {
+  display: flex;
+  gap: 4px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  
+  .task-card:hover & {
+    opacity: 1;
+  }
+  
+  .action-button {
+    width: 32px;
+    height: 32px;
+    line-height: 32px;
+    
+    mat-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+    }
+    
+    &.delete {
+      color: $warn-color;
+      
+      &:hover {
+        background-color: rgba(244, 67, 54, 0.1);
+      }
+    }
+    
+    &:not(.delete):hover {
+      background-color: rgba(25, 118, 210, 0.1);
+      color: $primary-color;
+    }
+  }
+}
+
+// Détails étendus
+.task-details {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid $border-color;
+  animation: slideDown 0.3s ease-out;
+}
+
+.task-extended-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.info-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.875rem;
+  color: $text-secondary;
+  
+  mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    color: $text-disabled;
+  }
+}
+
+// État vide
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: $text-secondary;
+  margin-top: 48px;
+  padding: 32px;
+  
+  mat-icon {
+    font-size: 64px;
+    width: 64px;
+    height: 64px;
+    margin-bottom: 16px;
+    color: $text-disabled;
+  }
+  
+  p {
+    font-size: 1.1rem;
+    margin: 0;
+    font-weight: 400;
+  }
+}
+
+// Chargement
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  margin-top: 64px;
+  padding: 48px;
+  
+  mat-progress-spinner {
+    ::ng-deep {
+      circle {
+        stroke: $primary-color;
+      }
+    }
+  }
+  
+  p {
+    font-size: 1.1rem;
+    color: $text-secondary;
+    margin: 0;
+    font-weight: 400;
+  }
+}
+
+// Responsive design
+@media (max-width: 1024px) {
+  .planning-container {
+    padding: 16px;
+  }
+  
+  .summary-cards {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+  }
+}
+
+@media (max-width: 768px) {
+  .planning-header {
+    flex-direction: column;
+    gap: 16px;
+    align-items: flex-start;
+    
+    .header-actions {
+      align-self: stretch;
+      
+      button {
+        flex: 1;
+        justify-content: center;
+      }
+    }
+  }
+  
+  .summary-cards {
+    grid-template-columns: 1fr;
+  }
+  
+  .task-group {
+    padding: 16px;
+  }
+  
+  .task-header {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .task-actions {
+    opacity: 1;
+    align-self: stretch;
+    justify-content: space-around;
+  }
+  
+  .action-button {
+    flex: 1;
+  }
+}
+
+// Animations
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    max-height: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    max-height: 200px;
+    transform: translateY(0);
+  }
+}
