@@ -1,0 +1,36 @@
+<div *ngIf="loading">Chargement...</div>
+<div *ngIf="error">{{ error }}</div>
+
+<div *ngIf="company && !loading">
+  <h2>Détails de l'entreprise : {{ company.name }}</h2>
+
+  <ul>
+    <li><strong>Nature :</strong> {{ company.nature || 'Non défini' }}</li>
+    <li><strong>SIRET :</strong> {{ company.siret || '-' }}</li>
+    <li><strong>Code NAF :</strong> {{ company.code_naf || '-' }}</li>
+    <li><strong>CA :</strong> {{ company.chiffre_affaires || '-' }}</li>
+    <li><strong>Salariés :</strong> {{ company.nb_salaries || '-' }}</li>
+    <li><strong>Note Creditsafe :</strong> {{ company.creditsafe_note || '-' }}</li>
+    <li><strong>Code postal :</strong> {{ company.code_postal || '-' }}</li>
+    <li><strong>Site web :</strong>
+      <a *ngIf="company.site_web" [href]="company.site_web" target="_blank">{{ company.site_web }}</a>
+      <span *ngIf="!company.site_web">-</span>
+    </li>
+    <li><strong>Contacts liés :</strong>
+      <ul *ngIf="contacts.length > 0; else noContacts" style="margin-left: 1rem;">
+        <li *ngFor="let contact of contacts">
+          {{ contact.contact_name }} ({{ contact.email }})
+        </li>
+      </ul>
+      <ng-template #noContacts>
+        <span>Aucun contact défini</span>
+      </ng-template>
+    </li>
+    <li><strong>Créée le :</strong> {{ company.created_at | date: 'short' }}</li>
+  </ul>
+
+  <div style="margin-top: 1rem;">
+    <button (click)="goBack()">← Retour à la liste</button>
+    <button (click)="edit()">✏️ Modifier</button>
+  </div>
+</div>

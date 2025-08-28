@@ -1,0 +1,40 @@
+<mat-toolbar color="primary">
+  <button mat-icon-button (click)="goBack()" aria-label="Retour">
+    <mat-icon>arrow_back</mat-icon>
+  </button>
+  <span>Détails du contact</span>
+  <span class="spacer"></span>
+  <button mat-icon-button (click)="editContact()" aria-label="Éditer">
+    <mat-icon>edit</mat-icon>
+  </button>
+  <button mat-icon-button color="warn" (click)="deleteContact()" aria-label="Supprimer">
+    <mat-icon>delete</mat-icon>
+  </button>
+</mat-toolbar>
+
+<div class="container" *ngIf="!loading; else loadingTpl">
+
+  <div *ngIf="errorMessage" class="error-message">
+    {{ errorMessage }}
+  </div>
+
+  <div *ngIf="contact; else noContactTpl" class="contact-details">
+    <h2>{{ contact.contact_name || 'Sans nom' }}</h2>
+    <p><strong>Entreprise :</strong> {{ getCompanyName() }}</p>
+    <p *ngIf="contact.position"><strong>Poste :</strong> {{ contact.position }}</p>
+    <p *ngIf="contact.email"><strong>Email :</strong> {{ contact.email }}</p>
+    <p *ngIf="contact.phone"><strong>Téléphone :</strong> {{ contact.phone }}</p>
+    <p *ngIf="contact.notes"><strong>Notes :</strong> {{ contact.notes }}</p>
+  </div>
+
+</div>
+
+<ng-template #loadingTpl>
+  <div class="loading">
+    <p>Chargement en cours...</p>
+  </div>
+</ng-template>
+
+<ng-template #noContactTpl>
+  <p>Aucun contact trouvé.</p>
+</ng-template>

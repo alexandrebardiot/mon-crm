@@ -3,8 +3,28 @@
 export interface Company {
   id: string;
   name: string;
+  nature?: 'Prospect' | 'Client' | 'Prescripteur';
+  siret?: string;
+  code_naf?: string;
+  chiffre_affaires?: string;
+  nb_salaries?: number;
+  creditsafe_note?: number;
+  code_postal?: string;
+  site_web?: string;
   created_at: string;
 }
+export interface CreateCompanyDto {
+  name: string;
+  nature?: 'Prospect' | 'Client' | 'Prescripteur';
+  siret?: string;
+  code_naf?: string;
+  chiffre_affaires?: string;
+  nb_salaries?: number;
+  creditsafe_note?: number;
+  code_postal?: string;
+  site_web?: string;
+}
+
 
 export interface Contact {
   id: string;
@@ -17,7 +37,7 @@ export interface Contact {
   user_id: string;
   created_at: string;
   updated_at?: string;
-  company?: Company; // Relation join avec Supabase
+  companies?: Company; // Relation join avec Supabase
 }
 
 export interface Template {
@@ -39,12 +59,33 @@ export interface Project {
   name: string;
   description?: string;
   contact_id: string;
-  create_by: string; // Correction: create_by au lieu de created_by
+  company_id: string;
+  typology?: string;
+  expected_revenue?: number;
+  expectations?: string;
+  start_date?: string;
+  end_date?: string;
+  status?: string;
+  feeling?: string;
+  create_by: string;
   created_at: string;
   contact?: Contact;
-  company?: Company;
   project_steps?: ProjectStep[];
 }
+
+export interface CreateProjectDto {
+  name: string;
+  description?: string;
+  contact_id: string;
+  typology?: string;
+  expected_revenue?: number;
+  expectations?: string;
+  start_date?: string;
+  end_date?: string;
+  status?: string;
+  feeling?: string;
+}
+
 
 // DTOs pour les services
 
@@ -63,12 +104,6 @@ export interface CreateContactDto {
   company_id?: string;
 }
 
-export interface CreateProjectDto {
-  name: string;
-  description?: string;
-  contact_id: string;
-  company_id: string;
-}
 
 // Interface pour les réponses des services
 

@@ -1,0 +1,190 @@
+<div class="company-create-container">
+  <div class="header">
+    <h1>Créer une nouvelle entreprise</h1>
+  </div>
+
+  <div class="form-container">
+    <form [formGroup]="companyForm" (ngSubmit)="onSubmit()" class="company-form">
+      
+      <!-- Message d'erreur global -->
+      <div *ngIf="errorMessage" class="error-message global-error">
+        {{ errorMessage }}
+      </div>
+
+      <!-- Informations principales -->
+      <div class="form-section">
+        <h2>Informations principales</h2>
+        
+        <div class="form-group">
+          <label for="name" class="required">Nom de l'entreprise</label>
+          <input
+            type="text"
+            id="name"
+            formControlName="name"
+            class="form-control"
+            [class.invalid]="isFieldInvalid('name')"
+            placeholder="Nom de l'entreprise"
+          />
+          <div *ngIf="isFieldInvalid('name')" class="error-message">
+            {{ getFieldError('name') }}
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="nature">Nature</label>
+          <select id="nature" formControlName="nature" class="form-control">
+            <option value="">Sélectionner une nature</option>
+            <option *ngFor="let nature of natureOptions" [value]="nature">{{ nature }}</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Informations légales -->
+      <div class="form-section">
+        <h2>Informations légales</h2>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="siret">SIRET</label>
+            <input
+              type="text"
+              id="siret"
+              formControlName="siret"
+              class="form-control"
+              placeholder="Numéro SIRET"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="code_naf">Code NAF</label>
+            <input
+              type="text"
+              id="code_naf"
+              formControlName="code_naf"
+              class="form-control"
+              placeholder="Code NAF"
+            />
+          </div>
+        </div>
+      </div>
+
+      <!-- Informations économiques -->
+      <div class="form-section">
+        <h2>Informations économiques</h2>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="chiffre_affaires">Chiffre d'affaires</label>
+            <input
+              type="text"
+              id="chiffre_affaires"
+              formControlName="chiffre_affaires"
+              class="form-control"
+              placeholder="Chiffre d'affaires"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="nb_salaries">Nombre de salariés</label>
+            <input
+              type="number"
+              id="nb_salaries"
+              formControlName="nb_salaries"
+              class="form-control"
+              [class.invalid]="isFieldInvalid('nb_salaries')"
+              placeholder="Nombre de salariés"
+              min="0"
+            />
+            <div *ngIf="isFieldInvalid('nb_salaries')" class="error-message">
+              {{ getFieldError('nb_salaries') }}
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="creditsafe_note">Note CreditSafe</label>
+          <input
+            type="number"
+            id="creditsafe_note"
+            formControlName="creditsafe_note"
+            class="form-control"
+            [class.invalid]="isFieldInvalid('creditsafe_note')"
+            placeholder="Note CreditSafe (0-100)"
+            min="0"
+            max="100"
+          />
+          <div *ngIf="isFieldInvalid('creditsafe_note')" class="error-message">
+            {{ getFieldError('creditsafe_note') }}
+          </div>
+        </div>
+      </div>
+
+      <!-- Informations de contact -->
+      <div class="form-section">
+        <h2>Informations de contact</h2>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="code_postal">Code postal</label>
+            <input
+              type="text"
+              id="code_postal"
+              formControlName="code_postal"
+              class="form-control"
+              [class.invalid]="isFieldInvalid('code_postal')"
+              placeholder="Code postal (5 chiffres)"
+            />
+            <div *ngIf="isFieldInvalid('code_postal')" class="error-message">
+              {{ getFieldError('code_postal') }}
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="site_web">Site web</label>
+            <input
+              type="url"
+              id="site_web"
+              formControlName="site_web"
+              class="form-control"
+              [class.invalid]="isFieldInvalid('site_web')"
+              placeholder="https://example.com"
+            />
+            <div *ngIf="isFieldInvalid('site_web')" class="error-message">
+              {{ getFieldError('site_web') }}
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="contact_principal">Contact principal</label>
+          <select id="contact_principal" formControlName="contact_principal" class="form-control">
+            <option value="">Sélectionner un contact</option>
+            <option *ngFor="let contact of contacts" [value]="contact.id">
+              {{ contact.nom }} {{ contact.prenom }}
+            </option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Boutons d'action -->
+      <div class="form-actions">
+        <button 
+          type="button" 
+          class="btn btn-secondary" 
+          (click)="onCancel()"
+          [disabled]="isLoading"
+        >
+          Annuler
+        </button>
+        <button 
+          type="submit" 
+          class="btn btn-primary" 
+          [disabled]="isLoading || companyForm.invalid"
+        >
+          <span *ngIf="isLoading">Création...</span>
+          <span *ngIf="!isLoading">Créer l'entreprise</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

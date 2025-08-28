@@ -1,0 +1,156 @@
+<mat-card class="add-project-card">
+  <form [formGroup]="projectForm" (ngSubmit)="onSubmit()">
+    <mat-card-title>Créer un nouveau projet</mat-card-title>
+
+    <!-- Nom du projet -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Nom du projet *</mat-label>
+      <input matInput formControlName="name" placeholder="Nom du projet" />
+      <mat-error *ngIf="projectForm.get('name')?.hasError('required')">Le nom est requis</mat-error>
+      <mat-error *ngIf="projectForm.get('name')?.hasError('minlength')">Le nom doit faire au moins 2 caractères</mat-error>
+    </mat-form-field>
+
+    <!-- Description -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Description</mat-label>
+      <textarea matInput formControlName="description" placeholder="Description du projet"></textarea>
+    </mat-form-field>
+
+    <!-- Entreprise -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Entreprise *</mat-label>
+      <mat-select formControlName="company_id" placeholder="Sélectionnez une entreprise">
+        <mat-option *ngFor="let company of companies" [value]="company.id">
+          {{ company.name }}
+        </mat-option>
+      </mat-select>
+      <mat-error *ngIf="projectForm.get('company_id')?.hasError('required')">L'entreprise est requise</mat-error>
+    </mat-form-field>
+
+    <!-- Contact (affiché seulement si contacts filtrés) -->
+    <mat-form-field appearance="outline" class="full-width" *ngIf="filteredContacts.length > 0">
+      <mat-label>Contact *</mat-label>
+      <mat-select formControlName="contact_id" placeholder="Sélectionnez un contact">
+        <mat-option *ngFor="let contact of filteredContacts" [value]="contact.id">
+          {{ contact.contact_name }}
+        </mat-option>
+      </mat-select>
+      <mat-error *ngIf="projectForm.get('contact_id')?.hasError('required')">Le contact est requis</mat-error>
+    </mat-form-field>
+
+    <!-- Typologie -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Typologie</mat-label>
+      <input matInput formControlName="typology" placeholder="Typologie" />
+    </mat-form-field>
+
+    <!-- Chiffre d'affaires attendu -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Chiffre d'affaires attendu</mat-label>
+      <input matInput type="number" formControlName="expected_revenue" placeholder="Montant attendu" />
+    </mat-form-field>
+
+    <!-- Attentes -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Attentes</mat-label>
+      <textarea matInput formControlName="expectations" placeholder="Attentes du projet"></textarea>
+    </mat-form-field>
+
+    <!-- Date de début -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Date de début</mat-label>
+      <input matInput [matDatepicker]="startPicker" formControlName="start_date" placeholder="Date de début" />
+      <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+      <mat-datepicker #startPicker></mat-datepicker>
+    </mat-form-field>
+
+    <!-- Date de fin -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Date de fin</mat-label>
+      <input matInput [matDatepicker]="endPicker" formControlName="end_date" placeholder="Date de fin" />
+      <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
+      <mat-datepicker #endPicker></mat-datepicker>
+    </mat-form-field>
+
+    <!-- Statut -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Statut</mat-label>
+      <input matInput formControlName="status" placeholder="Statut du projet" />
+    </mat-form-field>
+
+    <!-- Sentiment -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Sentiment</mat-label>
+      <input matInput formControlName="feeling" placeholder="Sentiment sur le projet" />
+    </mat-form-field>
+
+    <!-- Modèle de projet -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Modèle de projet *</mat-label>
+      <mat-select formControlName="template_id" placeholder="Sélectionnez un modèle">
+        <mat-option *ngFor="let template of templates" [value]="template.id">
+          {{ template.name }}
+        </mat-option>
+      </mat-select>
+      <mat-error *ngIf="projectForm.get('template_id')?.hasError('required')">Le modèle est requis</mat-error>
+    </mat-form-field>
+
+    <!-- Section Planning des étapes (navigation manuelle alternative) -->
+    <section class="planning-section" *ngIf="projectSteps.length > 0">
+      <h3>Planification des étapes (Navigation manuelle)</h3>
+      <p>Sélectionnez une étape, puis cliquez sur un jour pour l'assigner.</p>
+
+      <div class="steps-list">
+        <mat-card *ngFor="let step of projectSteps; let i = index"
+                  (click)="selectStep(i)"
+                  [class.selected]="selectedStepIndex === i"
+                  [class.scheduled]="isStepScheduled(step)"
+                  matTooltip="{{ step.description || 'Pas de description' }}"
+                  matTooltipPosition="above">
+          <mat-icon *ngIf="isStepScheduled(step)" color="primary">check_circle</mat-icon>
+          {{ step.name }}
+        </mat-card>
+      </div>
+
+      <div class="week-navigation">
+        <button mat-mini-fab color="primary" (click)="navigateWeek('prev')" type="button" aria-label="Semaine précédente">
+          <mat-icon>chevron_left</mat-icon>
+        </button>
+        <span class="week-range">
+          {{ formatDayNumber(currentWeekStart) }} - {{ formatDayNumber(getWeekEndDate()) }}
+        </span>
+        <button mat-mini-fab color="primary" (click)="navigateWeek('next')" type="button" aria-label="Semaine suivante">
+          <mat-icon>chevron_right</mat-icon>
+        </button>
+      </div>
+
+      <div class="week-days">
+        <div class="day-card"
+             *ngFor="let day of weekDays; let dayIndex = index"
+             [class.today]="day.isToday"
+             (click)="assignStepToDay(dayIndex)"
+             matTooltip="{{ day.dayName }} {{ day.dayNumber }} - {{ getTasksCountForDay(dayIndex) }} étape(s)">
+          <div class="day-header">
+            <span class="day-name">{{ day.dayName }}</span>
+            <span class="day-number">{{ day.dayNumber }}</span>
+          </div>
+          <div class="tasks-indicator" [ngClass]="getLoadIndicatorClass(dayIndex)"></div>
+          <div class="tasks-list" *ngIf="day.tasks.length > 0">
+            <ul>
+              <li *ngFor="let task of day.tasks">{{ task.name }}</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Actions -->
+    <mat-card-actions align="end">
+      <button mat-stroked-button type="button" (click)="onCancel()" color="warn">Annuler</button>
+      <button mat-flat-button color="primary" type="submit" [disabled]="!canSubmit() || loading">
+        <mat-icon *ngIf="loading" class="spin">autorenew</mat-icon>
+        Créer
+      </button>
+    </mat-card-actions>
+  </form>
+</mat-card>

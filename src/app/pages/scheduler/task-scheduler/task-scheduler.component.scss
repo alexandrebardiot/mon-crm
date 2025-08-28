@@ -1,0 +1,172 @@
+// task-scheduler.component.scss
+.task-scheduler {
+  margin: 20px 0;
+  
+  .week-days {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+    margin-bottom: 20px;
+    
+    @media (max-width: 768px) {
+      grid-template-columns: 1fr;
+    }
+    
+    .day-card {
+      min-height: 200px;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      }
+      
+      .day-title {
+        font-size: 14px;
+        font-weight: 600;
+        margin: 0;
+        padding: 8px 0;
+        
+        .today-indicator {
+          color: #e91e63;
+          font-size: 12px;
+          font-weight: 500;
+        }
+      }
+      
+      .tasks-container {
+        min-height: 120px;
+        
+        .task {
+          margin-bottom: 8px;
+          padding: 8px;
+          border-radius: 6px;
+          background-color: #f5f5f5;
+          border-left: 3px solid #2196f3;
+          cursor: pointer;
+          transition: all 0.2s ease;
+          
+          &:hover {
+            background-color: #e3f2fd;
+            transform: translateX(2px);
+          }
+          
+          &.selected {
+            background-color: #1976d2;
+            color: white;
+            
+            .task-name {
+              color: white;
+            }
+            
+            button {
+              color: white;
+            }
+          }
+          
+          .task-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            
+            .task-name {
+              font-size: 12px;
+              font-weight: 500;
+              flex: 1;
+              margin-right: 8px;
+              line-height: 1.3;
+            }
+            
+            button {
+              min-width: auto;
+              width: 32px;
+              height: 32px;
+              padding: 0;
+              
+              mat-icon {
+                font-size: 16px;
+                width: 16px;
+                height: 16px;
+              }
+            }
+          }
+        }
+        
+        .no-tasks {
+          color: #999;
+          font-style: italic;
+          font-size: 12px;
+          text-align: center;
+          padding: 20px 0;
+        }
+      }
+    }
+  }
+  
+  .unassigned-section {
+    .unassigned-tasks {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 12px;
+      
+      .task.unassigned {
+        margin-bottom: 0;
+        background-color: #fff3e0;
+        border-left-color: #ff9800;
+        
+        &:hover {
+          background-color: #ffe0b2;
+        }
+        
+        &.selected {
+          background-color: #ff9800;
+          color: white;
+        }
+        
+        .task-content {
+          .task-name {
+            font-size: 13px;
+          }
+          
+          button {
+            font-size: 12px;
+            padding: 4px 12px;
+            min-width: auto;
+            height: 28px;
+          }
+        }
+      }
+    }
+    
+    mat-card-header {
+      padding-bottom: 8px;
+      
+      mat-card-title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 16px;
+        
+        mat-icon {
+          color: #ff9800;
+        }
+      }
+    }
+  }
+}
+
+// Animations
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.task {
+  animation: fadeIn 0.3s ease-out;
+}

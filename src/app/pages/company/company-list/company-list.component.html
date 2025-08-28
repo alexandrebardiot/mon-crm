@@ -1,0 +1,134 @@
+<div class="company-list-container">
+  <div class="header">
+    <h1>Gestion des entreprises</h1>
+    <button class="btn btn-primary" (click)="navigateToCreate()">
+      <span class="icon">+</span>
+      Nouvelle entreprise
+    </button>
+  </div>
+
+  <!-- Message d'erreur -->
+  <div *ngIf="errorMessage" class="error-message global-error">
+    {{ errorMessage }}
+    <button class="btn-retry" (click)="loadCompanies()">Réessayer</button>
+  </div>
+
+  <!-- Chargement -->
+  <div *ngIf="isLoading" class="loading-container">
+    <div class="loading-spinner"></div>
+    <p>Chargement des entreprises...</p>
+  </div>
+
+  <!-- Liste des entreprises -->
+  <div *ngIf="!isLoading && companies.length > 0" class="companies-grid">
+    <div class="table-container">
+      <table class="companies-table">
+        <thead>
+          <tr>
+            <th>Nom</th>
+            <th>Nature</th>
+            <th>SIRET</th>
+            <th>Code NAF</th>
+            <th>Chiffre d'affaires</th>
+            <th>Salariés</th>
+            <th>Note CreditSafe</th>
+            <th>Code postal</th>
+            <th>Date création</th>
+            <th class="actions-header">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let company of companies" class="company-row">
+            <td class="company-name" (click)="navigateToDetails(company.id)">
+              <div class="name-container">
+                <span class="name">{{ company.name }}</span>
+                <span *ngIf="company.site_web" class="website">
+                  <a [href]="company.site_web" target="_blank" (click)="$event.stopPropagation()">🌐</a>
+                </span>
+              </div>
+            </td>
+            <td>
+              <span 
+                *ngIf="company.nature" 
+                class="badge" 
+                [class]="getNatureBadgeClass(company.nature)"
+              >
+                {{ company.nature }}
+              </span>
+              <span *ngIf="!company.nature" class="text-muted">-</span>
+            </td>
+            <td class="siret">{{ company.siret || '-' }}</td>
+            <td>{{ company.code_naf || '-' }}</td>
+            <td class="chiffre-affaires">{{ formatChiffreAffaires(company.chiffre_affaires) }}</td>
+            <td class="text-center">{{ formatNbSalaries(company.nb_salaries) }}</td>
+            <td class="text-center">
+              <span 
+                *ngIf="company.creditsafe_note !== null && company.creditsafe_note !== undefined" 
+                class="credit-note" 
+                [class]="getCreditSafeClass(company.creditsafe_note)"
+              >
+                {{ formatCreditSafeNote(company.creditsafe_note) }}
+              </span>
+              <span *ngIf="company.creditsafe_note === null || company.creditsafe_note === undefined" class="text-muted">-</span>
+            </td>
+            <td>{{ company.code_postal || '-' }}</td>
+            <td class="date">{{ formatDate(company.created_at) }}</td>
+            <td class="actions">
+              <div class="action-buttons">
+                <button 
+                  class="btn-icon btn-view" 
+                  (click)="navigateToDetails(company.id)"
+                  title="Voir les détails"
+                >
+                  👁️
+                </button>
+                <button 
+                  class="btn-icon btn-edit" 
+                  (click)="navigateToEdit(company.id)"
+                  title="Modifier"
+                >
+                  ✏️
+                </button>
+                <button 
+                  class="btn-icon btn-delete" 
+                  (click)="confirmDelete(company)"
+                  title="Supprimer"
+                >
+                  🗑️
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Message si aucune entreprise -->
+  <div *ngIf="!isLoading && companies.length === 0 && !errorMessage" class="empty-state">
+    <div class="empty-icon">🏢</div>
+    <h3>Aucune entreprise</h3>
+    <p>Vous n'avez pas encore créé d'entreprise.</p>
+    <button class="btn btn-primary" (click)="navigateToCreate()">
+      Créer la première entreprise
+    </button>
+  </div>
+
+  <!-- Modal de confirmation de suppression -->
+  <div *ngIf="deleteConfirmation.show" class="modal-overlay" (click)="cancelDelete()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <h3>Confirmer la suppression</h3>
+      <p>Êtes-vous sûr de vouloir supprimer l'entreprise <strong>{{ deleteConfirmation.company?.name }}</strong> ?</p>
+      <p class="warning">Cette action est irréversible.</p>
+      
+      <div class="modal-actions">
+        <button class="btn btn-secondary" (click)="cancelDelete()">
+          Annuler
+        </button>
+        <button class="btn btn-danger" (click)="confirmDeleteAction()">
+          Supprimer
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

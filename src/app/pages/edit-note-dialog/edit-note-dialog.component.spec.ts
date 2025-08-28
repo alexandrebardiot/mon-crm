@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { EditNoteDialogComponent } from '../dashboard/edit-note-dialog.component';
+import { EditNoteDialogComponent } from '../contact/dashboard/edit-note-dialog.component';
 
 describe('EditNoteDialogComponent', () => {
   let component: EditNoteDialogComponent;

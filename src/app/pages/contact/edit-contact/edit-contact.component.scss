@@ -1,0 +1,15 @@
+.edit-contact-container {
+  max-width: 600px;
+  margin: 2rem auto;
+  display: flex;
+  flex-direction: column;
+
+  mat-form-field {
+    width: 100%;
+    margin-bottom: 1rem;
+  }
+
+  button {
+    align-self: flex-start;
+  }
+}

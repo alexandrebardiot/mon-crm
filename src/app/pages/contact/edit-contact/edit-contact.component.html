@@ -1,0 +1,52 @@
+<div class="edit-contact-container" *ngIf="!loading; else loadingTpl">
+  <h2>{{ contactId ? 'Modifier Contact' : 'Ajouter Contact' }}</h2>
+
+  <form [formGroup]="contactForm" (ngSubmit)="onSubmit()">
+
+    <!-- Nom -->
+    <mat-form-field appearance="fill">
+      <mat-label>Nom du contact</mat-label>
+      <input matInput formControlName="contact_name" required />
+      <mat-error *ngIf="contactForm.controls['contact_name'].invalid && contactForm.controls['contact_name'].touched">
+        Nom requis
+      </mat-error>
+    </mat-form-field>
+
+    <!-- Email -->
+    <mat-form-field appearance="fill">
+      <mat-label>Email</mat-label>
+      <input matInput formControlName="email" required />
+      <mat-error *ngIf="contactForm.controls['email'].invalid && contactForm.controls['email'].touched">
+        Email valide requis
+      </mat-error>
+    </mat-form-field>
+
+    <!-- Téléphone -->
+    <mat-form-field appearance="fill">
+      <mat-label>Téléphone</mat-label>
+      <input matInput formControlName="phone" />
+    </mat-form-field>
+
+    <!-- Poste -->
+    <mat-form-field appearance="fill">
+      <mat-label>Poste</mat-label>
+      <input matInput formControlName="position" />
+    </mat-form-field>
+
+    <!-- Notes -->
+    <mat-form-field appearance="fill">
+      <mat-label>Notes</mat-label>
+      <textarea matInput formControlName="notes"></textarea>
+    </mat-form-field>
+
+
+    <!-- Bouton -->
+    <button mat-raised-button color="primary" type="submit" [disabled]="contactForm.invalid">
+      {{ contactId ? 'Sauvegarder' : 'Ajouter' }}
+    </button>
+  </form>
+</div>
+
+<ng-template #loadingTpl>
+  <p>Chargement...</p>
+</ng-template>

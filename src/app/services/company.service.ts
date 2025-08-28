@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { SupabaseService } from './supabase.service';
-import { Company } from './types';
+import { Company, CreateCompanyDto } from './types';
 
 @Injectable({
   providedIn: 'root',
@@ -19,27 +19,50 @@ export class CompanyService {
     return data || [];
   }
 
-  // Créer une entreprise avec juste un nom
-  async create(company: { name: string }): Promise<Company> {
-    const { data, error } = await this.supabaseService.client
-      .from('companies')
-      .insert([company])
-      .select()
-      .single();
-
-    if (error) throw error;
-    return data!;
-  }
-
-  // (Optionnel) récupérer une entreprise par son id
-  async getById(id: string): Promise<Company | null> {
+  // Récupérer une entreprise par ID
+  async getCompanyById(id: string): Promise<Company> {
     const { data, error } = await this.supabaseService.client
       .from('companies')
       .select('*')
       .eq('id', id)
       .single();
 
-    if (error) throw error;
+    if (error || !data) throw error || new Error('Entreprise non trouvée');
     return data;
+  }
+
+  // Créer une entreprise
+  async create(company: CreateCompanyDto): Promise<Company> {
+    const { data, error } = await this.supabaseService.client
+      .from('companies')
+      .insert([company])
+      .select()
+      .single();
+
+    if (error || !data) throw error || new Error('Erreur lors de la création');
+    return data;
+  }
+
+  // Mettre à jour une entreprise
+  async update(id: string, updateData: Partial<CreateCompanyDto>): Promise<Company> {
+    const { data, error } = await this.supabaseService.client
+      .from('companies')
+      .update(updateData)
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error || !data) throw error || new Error('Erreur lors de la mise à jour');
+    return data;
+  }
+
+  // Supprimer une entreprise
+  async delete(id: string): Promise<void> {
+    const { error } = await this.supabaseService.client
+      .from('companies')
+      .delete()
+      .eq('id', id);
+
+    if (error) throw error;
   }
 }
